@@ -1,0 +1,22 @@
+{
+  "name": "tsbccc",
+  "version": "1.0.0",
+  "description": "typescript bi-cartesian closed categories",
+  "main": "index.ts",
+  "author": "Alex Dekau",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn clean; tsc",
+    "clean": "rimraf lib",
+    "test": "jest"
+  },
+  "dependencies": {
+    "rimraf": "^3.0.0",
+    "typescript": "^3.7.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.22",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0"
+  }
+}
