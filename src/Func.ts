@@ -1,3 +1,5 @@
+import { Prod, times } from "./Prod";
+
 export type Func<TDomain, TRange> = {
     f: (domain: TDomain) => TRange;
 
@@ -10,6 +12,11 @@ export type Func<TDomain, TRange> = {
     then: <TPostComposition>(
         g: Func<TRange, TPostComposition>
     ) => Func<TDomain, TPostComposition>;
+
+    // Product <f*g>
+    times: <TCtor>(
+        g: Func<TDomain, TCtor>
+    ) => Func<TDomain, Prod<TRange, TCtor>>;
 };
 
 export const func = <TDomain, TRange>(f: (domain: TDomain) => TRange): Func<TDomain, TRange> => ({
@@ -27,5 +34,12 @@ export const func = <TDomain, TRange>(f: (domain: TDomain) => TRange): Func<TDom
         g: Func<TRange, TPostComposition>
     ): Func<TDomain, TPostComposition> {
         return func<TDomain, TPostComposition>((x) => g.f(this.f(x)));
+    },
+
+    times<TCtor>(
+        this: Func<TDomain, TRange>,
+        g: Func<TDomain, TCtor>
+    ): Func<TDomain, Prod<TRange, TCtor>> {
+        return func(times(this.f, g.f));
     }
 });
