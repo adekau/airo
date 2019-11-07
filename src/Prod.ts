@@ -4,8 +4,12 @@ export type Prod<T1, T2> = {
     snd: T2;
 };
 
-export const times = <TCtor, T1, T2>(f: (constructorFn: TCtor) => T1, g: (constructorFn: TCtor) => T2) =>
-    (constructorInput: TCtor): Prod<T1, T2> => ({
-        fst: f(constructorInput),
-        snd: g(constructorInput)
-    });
+export const times = <TCtor, T1, T2>(
+    f: (constructorFn: TCtor) => T1,
+    g: (constructorFn: TCtor) => T2
+) => (
+    constructorInput: TCtor
+): Prod<T1, T2> => ({
+    fst: f(constructorInput),
+    snd: g(constructorInput)
+});
