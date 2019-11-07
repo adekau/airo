@@ -24,6 +24,13 @@ test('Composition', () => {
     expect(incrDouble.f(5)).toBe(12);
 });
 
+test('Composition the other way', () => {
+    const incr: Func<number, number> = func(x => x + 1);
+    const double: Func<number, number> = func(x => x * 2);
+    const doubleAfterIncr: Func<number, number> = double.after(incr);
+    expect(doubleAfterIncr.f(5)).toBe(12);
+})
+
 test('Different range type', () => {
     const incr: Func<number, number> = func(x => x + 1);
     const double: Func<number, number> = func(x => x * 2);
