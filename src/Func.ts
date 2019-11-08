@@ -18,6 +18,10 @@ export type Func<TDomain, TRange> = {
         g: Func<TDomain, TCtor>
     ) => Func<TDomain, Prod<TRange, TCtor>>;
 
+    // Parallel application of functions over a product
+    // f: a -> c
+    // g: b -> d
+    // <f*g> : a*b -> c*d
     timesMap: <T1Prod2, T2Prod2>(
         g: Func<T1Prod2, T2Prod2>
     ) => Func<Prod<TDomain, T1Prod2>, Prod<TRange, T2Prod2>>;
