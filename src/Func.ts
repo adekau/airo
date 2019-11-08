@@ -1,4 +1,4 @@
-import { Prod, times } from "./Prod";
+import { Prod, times, timesMap } from "./Prod";
 
 export type Func<TDomain, TRange> = {
     f: (domain: TDomain) => TRange;
@@ -17,6 +17,10 @@ export type Func<TDomain, TRange> = {
     times: <TCtor>(
         g: Func<TDomain, TCtor>
     ) => Func<TDomain, Prod<TRange, TCtor>>;
+
+    timesMap: <T1Prod2, T2Prod2>(
+        g: Func<T1Prod2, T2Prod2>
+    ) => Func<Prod<TDomain, T1Prod2>, Prod<TRange, T2Prod2>>;
 };
 
 export const func = <TDomain, TRange>(f: (domain: TDomain) => TRange): Func<TDomain, TRange> => ({
@@ -41,5 +45,12 @@ export const func = <TDomain, TRange>(f: (domain: TDomain) => TRange): Func<TDom
         g: Func<TDomain, TCtor>
     ): Func<TDomain, Prod<TRange, TCtor>> {
         return func(times(this.f, g.f));
+    },
+
+    timesMap<T1Prod2, T2Prod2>(
+        this: Func<TDomain, TRange>,
+        g: Func<T1Prod2, T2Prod2>
+    ): Func<Prod<TDomain, T1Prod2>, Prod<TRange, T2Prod2>> {
+        return timesMap(this, g);
     }
 });

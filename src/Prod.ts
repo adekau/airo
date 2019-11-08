@@ -20,3 +20,16 @@ export const fst = <T1, T2>(): Func<Prod<T1, T2>, T1> => func(p => p.fst);
 
 // snd: T1*T2 -> T2
 export const snd = <T1, T2>(): Func<Prod<T1, T2>, T2> => func(p => p.snd);
+
+// <f*g> = <(fst;f)*(snd;g)>
+export const timesMap = <T1Prod1, T2Prod1, T1Prod2, T2Prod2>(
+    f: Func<T1Prod1, T1Prod2>,
+    g: Func<T2Prod1, T2Prod2>
+): Func<Prod<T1Prod1, T2Prod1>, Prod<T1Prod2, T2Prod2>> =>
+    (
+        fst<T1Prod1, T2Prod1>()
+            .then(f)
+    ).times(
+        snd<T1Prod1, T2Prod1>()
+            .then(g)
+    );
