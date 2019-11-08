@@ -40,10 +40,10 @@ export const func = <TDomain, TRange>(f: (domain: TDomain) => TRange): Func<TDom
         return func<TDomain, TPostComposition>((x) => g.f(this.f(x)));
     },
 
-    times<TCtor>(
+    times<T2Range>(
         this: Func<TDomain, TRange>,
-        g: Func<TDomain, TCtor>
-    ): Func<TDomain, Prod<TRange, TCtor>> {
+        g: Func<TDomain, T2Range>
+    ): Func<TDomain, Prod<TRange, T2Range>> {
         return func(times(this.f, g.f));
     },
 
