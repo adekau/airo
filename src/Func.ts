@@ -64,10 +64,10 @@ export const func = <TDomain, TRange>(f: (domain: TDomain) => TRange): Func<TDom
         return timesMap(this, g);
     },
 
-    plus<TGRange>(
+    plus<TGDomain>(
         this: Func<TDomain, TRange>,
-        g: Func<TGRange, TRange>
-    ): Func<Sum<TDomain, TGRange>, TRange> {
+        g: Func<TGDomain, TRange>
+    ): Func<Sum<TDomain, TGDomain>, TRange> {
         return func(plus(this.f, g.f));
     }
 });
