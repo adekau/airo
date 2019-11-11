@@ -27,3 +27,18 @@ export const plus = <TFDomain, TGDomain, TRange>(
 ) => x.kind === 'left'
     ? f(x.value)
     : g(x.value);
+
+// f+g: (f;inl)+(g;inr)
+export const plusMap = <TFDomain, TFRange, TGDomain, TGRange>(
+    f: Func<TFDomain, TFRange>,
+    g: Func<TGDomain, TGRange>
+): Func<Sum<TFDomain, TGDomain>, Sum<TFRange, TGRange>> =>
+    f
+        .then(
+            inl<TFRange, TGRange>()
+        )
+        .plus(g
+            .then(
+                inr<TFRange, TGRange>()
+            )
+        );

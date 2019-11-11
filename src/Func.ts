@@ -1,5 +1,5 @@
 import { Prod, times, timesMap } from "./Prod";
-import { Sum, plus } from './Sum';
+import { Sum, plus, plusMap } from './Sum';
 
 export type Func<TDomain, TRange> = {
     f: (domain: TDomain) => TRange;
@@ -31,6 +31,13 @@ export type Func<TDomain, TRange> = {
     plus: <TGDomain>(
         g: Func<TGDomain, TRange>
     ) => Func<Sum<TDomain, TGDomain>, TRange>;
+
+    // f: a -> b
+    // g: c -> d
+    // [f+g] : a+c -> b+d
+    plusMap: <TGDomain, TGRange>(
+        g: Func<TGDomain, TGRange>
+    ) => Func<Sum<TDomain, TGDomain>, Sum<TRange, TGRange>>;
 };
 
 export const func = <TDomain, TRange>(f: (domain: TDomain) => TRange): Func<TDomain, TRange> => ({
@@ -69,5 +76,32 @@ export const func = <TDomain, TRange>(f: (domain: TDomain) => TRange): Func<TDom
         g: Func<TGDomain, TRange>
     ): Func<Sum<TDomain, TGDomain>, TRange> {
         return func(plus(this.f, g.f));
+    },
+
+    plusMap<TGDomain, TGRange>(
+        this: Func<TDomain, TRange>,
+        g: Func<TGDomain, TGRange>
+    ): Func<Sum<TDomain, TGDomain>, Sum<TRange, TGRange>> {
+        return plusMap(this, g);
     }
 });
+
+// f: T1*T2 -> TRange
+// curry(f): T1 -> (T2 -> TRange)
+export const curry = <T1, T2, TRange>(
+    f: Func<Prod<T1, T2>, TRange>
+): Func<T1, Func<T2, TRange>> =>
+    func(a => func(b => f.f({
+        fst: a,
+        snd: b
+    })));
+
+// apply: (TDomain -> TRange) * TDomain -> TRange
+export const apply = <TDomain, TRange>(
+    f: Func<TDomain, TRange>,
+    x: TDomain
+): TRange => f.f(x);
+
+// applyPair: (TDomain -> TRange) * TDomain -> TRange
+export const applyPair = <TDomain, TRange>(): Func<Prod<Func<TDomain, TRange>, TDomain>, TRange> =>
+    func(p => p.fst.f(p.snd));
