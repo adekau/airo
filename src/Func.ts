@@ -20,21 +20,21 @@ export type Func<TDomain, TRange> = {
     ) => Func<TDomain, Prod<TRange, T2Range>>;
 
     // Parallel application of functions over a product
-    // f: a -> c
-    // g: b -> d
-    // <f*g> : a*b -> c*d
-    timesMap: <T1Prod2, T2Prod2>(
-        g: Func<T1Prod2, T2Prod2>
-    ) => Func<Prod<TDomain, T1Prod2>, Prod<TRange, T2Prod2>>;
+    // f: TDomain -> TRange
+    // g: TGDomain -> TGRange
+    // <f*g> : TDomain*TGDomain -> TRange*TGRange
+    timesMap: <TGDomain, TGRange>(
+        g: Func<TGDomain, TGRange>
+    ) => Func<Prod<TDomain, TGDomain>, Prod<TRange, TGRange>>;
 
     // Sum [f+g]
     plus: <TGDomain>(
         g: Func<TGDomain, TRange>
     ) => Func<Sum<TDomain, TGDomain>, TRange>;
 
-    // f: a -> b
-    // g: c -> d
-    // [f+g] : a+c -> b+d
+    // f: TDomain -> TRange
+    // g: TGDomain -> TGRange
+    // [f+g] : TDomain+TGDomain -> TRange+TGRange
     plusMap: <TGDomain, TGRange>(
         g: Func<TGDomain, TGRange>
     ) => Func<Sum<TDomain, TGDomain>, Sum<TRange, TGRange>>;
@@ -57,17 +57,17 @@ export const func = <TDomain, TRange>(f: (domain: TDomain) => TRange): Func<TDom
         return func<TDomain, TPostComposition>((x) => g.f(this.f(x)));
     },
 
-    times<T2Range>(
+    times<TGRange>(
         this: Func<TDomain, TRange>,
-        g: Func<TDomain, T2Range>
-    ): Func<TDomain, Prod<TRange, T2Range>> {
+        g: Func<TDomain, TGRange>
+    ): Func<TDomain, Prod<TRange, TGRange>> {
         return func(times(this.f, g.f));
     },
 
-    timesMap<T1Prod2, T2Prod2>(
+    timesMap<TGDomain, TGRange>(
         this: Func<TDomain, TRange>,
-        g: Func<T1Prod2, T2Prod2>
-    ): Func<Prod<TDomain, T1Prod2>, Prod<TRange, T2Prod2>> {
+        g: Func<TGDomain, TGRange>
+    ): Func<Prod<TDomain, TGDomain>, Prod<TRange, TGRange>> {
         return timesMap(this, g);
     },
 
