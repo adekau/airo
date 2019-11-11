@@ -35,4 +35,7 @@ export const timesMap = <T1Prod1, T2Prod1, T1Prod2, T2Prod2>(
     );
 
 export const swapProd = <T1, T2>(): Func<Prod<T1, T2>, Prod<T2, T1>> =>
-    snd<T1, T2>().times(fst<T1, T2>());
+    snd<T1, T2>()
+        .times(
+            fst<T1, T2>()
+        );

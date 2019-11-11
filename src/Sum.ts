@@ -44,4 +44,7 @@ export const plusMap = <TFDomain, TFRange, TGDomain, TGRange>(
         );
 
 export const swapSum = <T1, T2>(): Func<Sum<T1, T2>, Sum<T2, T1>> =>
-    inr<T2, T1>().plus(inl<T2, T1>());
+    inr<T2, T1>()
+        .plus(
+            inl<T2, T1>()
+        );
