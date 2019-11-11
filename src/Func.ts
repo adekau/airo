@@ -1,4 +1,5 @@
 import { Prod, times, timesMap } from "./Prod";
+import { Sum, plus } from './Sum';
 
 export type Func<TDomain, TRange> = {
     f: (domain: TDomain) => TRange;
@@ -25,6 +26,11 @@ export type Func<TDomain, TRange> = {
     timesMap: <T1Prod2, T2Prod2>(
         g: Func<T1Prod2, T2Prod2>
     ) => Func<Prod<TDomain, T1Prod2>, Prod<TRange, T2Prod2>>;
+
+    // Sum [f+g]
+    plus: <TGRange>(
+        g: Func<TGRange, TRange>
+    ) => Func<Sum<TDomain, TGRange>, TRange>;
 };
 
 export const func = <TDomain, TRange>(f: (domain: TDomain) => TRange): Func<TDomain, TRange> => ({
@@ -56,5 +62,12 @@ export const func = <TDomain, TRange>(f: (domain: TDomain) => TRange): Func<TDom
         g: Func<T1Prod2, T2Prod2>
     ): Func<Prod<TDomain, T1Prod2>, Prod<TRange, T2Prod2>> {
         return timesMap(this, g);
+    },
+
+    plus<TGRange>(
+        this: Func<TDomain, TRange>,
+        g: Func<TGRange, TRange>
+    ): Func<Sum<TDomain, TGRange>, TRange> {
+        return func(plus(this.f, g.f));
     }
 });
