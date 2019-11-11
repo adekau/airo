@@ -1,5 +1,5 @@
-import { Prod, times, fst, snd } from '../src/Prod';
-import { Func, func } from '../src/Func';
+import { Prod, times, fst, snd, swapProd } from '../src/Prod';
+import { Func, func, apply } from '../src/Func';
 
 test('prod', () => {
     const incr: Func<number, number> = func(x => x + 1);
@@ -27,4 +27,13 @@ test('func timesMap', () => {
     expect(f.f(1)).toStrictEqual({ fst: 3, snd: true });
     expect(f.f(2)).toStrictEqual({ fst: 4, snd: false });
     expect(f2.f({ fst: 5, snd: 15 })).toStrictEqual({ fst: 6, snd: 14 });
+});
+
+test('swap product', () => {
+    const incr = func<number, number>(x => x + 1);
+    const decr = func<number, number>(x => x - 1);
+    const prod = incr.timesMap(decr);
+    const prodSwap = prod.then(swapProd());
+    expect(apply(prod, { fst: 14, snd: 26 })).toStrictEqual({ fst: 15, snd: 25 });
+    expect(apply(prodSwap, { fst: 14, snd: 26 })).toStrictEqual({ fst: 25, snd: 15 });
 });
