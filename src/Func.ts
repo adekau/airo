@@ -15,9 +15,9 @@ export type Func<TDomain, TRange> = {
     ) => Func<TDomain, TPostComposition>;
 
     // Product <f*g>
-    times: <TCtor>(
-        g: Func<TDomain, TCtor>
-    ) => Func<TDomain, Prod<TRange, TCtor>>;
+    times: <T2Range>(
+        g: Func<TDomain, T2Range>
+    ) => Func<TDomain, Prod<TRange, T2Range>>;
 
     // Parallel application of functions over a product
     // f: a -> c
@@ -28,9 +28,9 @@ export type Func<TDomain, TRange> = {
     ) => Func<Prod<TDomain, T1Prod2>, Prod<TRange, T2Prod2>>;
 
     // Sum [f+g]
-    plus: <TGRange>(
-        g: Func<TGRange, TRange>
-    ) => Func<Sum<TDomain, TGRange>, TRange>;
+    plus: <TGDomain>(
+        g: Func<TGDomain, TRange>
+    ) => Func<Sum<TDomain, TGDomain>, TRange>;
 };
 
 export const func = <TDomain, TRange>(f: (domain: TDomain) => TRange): Func<TDomain, TRange> => ({
