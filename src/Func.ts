@@ -1,5 +1,6 @@
-import { Prod, times, timesMap } from "./Prod";
-import { Sum, plus, plusMap } from './Sum';
+import { Prod, times, timesMap, swapProd, fst, snd } from "./Prod";
+import { Sum, plus, plusMap, inl, inr } from './Sum';
+import { identity } from "./Category";
 
 export type Func<TDomain, TRange> = {
     f: (domain: TDomain) => TRange;
@@ -105,3 +106,34 @@ export const apply = <TDomain, TRange>(
 // applyPair: (TDomain -> TRange) * TDomain -> TRange
 export const applyPair = <TDomain, TRange>(): Func<Prod<Func<TDomain, TRange>, TDomain>, TRange> =>
     func(p => p.fst.f(p.snd));
+
+export const distSumProd = function <A, B, C>(): Func<Prod<A, Sum<B, C>>, Sum<Prod<A, B>, Prod<A, C>>> {
+    const f1: Func<Prod<B, A>, Sum<Prod<A, B>, Prod<A, C>>> = swapProd<B, A>().then(inl()),
+        f = curry(f1),
+        g1: Func<Prod<C, A>, Sum<Prod<A, B>, Prod<A, C>>> = swapProd<C, A>().then(inr()),
+        g = curry(g1);
+    return identity<A>()
+        .timesMap(
+            f.plus(g)
+        )
+        .then(swapProd())
+        .then(applyPair());
+};
+
+export const factorSumProd = function <A, B, C>(): Func<Sum<Prod<A, B>, Prod<A, C>>, Prod<A, Sum<B, C>>> {
+    const f: Func<Sum<Prod<A, B>, Prod<A, C>>, A> = fst<A, B>()
+        .plus(
+            fst<A, C>()
+        );
+    const g: Func<Sum<Prod<A, B>, Prod<A, C>>, Sum<B, C>> = snd<A, B>()
+        .then(
+            inl<B, C>()
+        )
+        .plus(
+            snd<A, C>()
+                .then(
+                    inr<B, C>()
+                )
+        );
+    return f.times(g);
+};
