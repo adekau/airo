@@ -29,6 +29,13 @@ export const powerOfZeroInv = function <A>(): Func<One, Func<Zero, A>> {
     );
 };
 
-export const productIdentity = function <A>(): Func<Prod<A, One>, A> {
+export const prodIdentity = function <A>(): Func<Prod<A, One>, A> {
     return fst<A, One>();
+};
+
+export const prodIdentityInv = function <A>(): Func<A, Prod<A, One>> {
+    return identity<A>()
+        .times(
+            unit<A>()
+        );
 };
