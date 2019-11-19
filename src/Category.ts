@@ -1,4 +1,5 @@
-import { Func, func } from "./Func";
+import { Func, curry, func } from "./Func";
+import { Prod, fst, snd } from './Prod';
 
 export type Zero = never;
 export type One = {};
@@ -16,3 +17,18 @@ export const unit = <TDomain>(): Func<TDomain, One> =>
 // identity: a -> a
 export const identity = <T>(): Func<T, T> =>
     func(x => x);
+
+export const powerOfZero = function <A>(): Func<Func<Zero, A>, One> {
+    return unit();
+};
+
+export const powerOfZeroInv = function <A>(): Func<One, Func<Zero, A>> {
+    return curry(
+        absurd<A>()
+            .after(snd<One, Zero>())
+    );
+};
+
+export const productIdentity = function <A>(): Func<Prod<A, One>, A> {
+    return fst<A, One>();
+};
