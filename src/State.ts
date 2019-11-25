@@ -25,7 +25,9 @@ export function createState<TState, T>(runFunc: StFunc<TState, T>): State<TState
         },
 
         ignore(this: State<TState, T>): State<TState, One> {
-            return this.ignoreWith<One>(unit().f({}));
+            return this.ignoreWith<One>(
+                apply(unit(), void 0)
+            );
         },
 
         ignoreWith: function<U>(this: State<TState, T>, val: U): State<TState, U> {
