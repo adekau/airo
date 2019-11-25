@@ -32,7 +32,7 @@ test('state then', () => {
                     .times(fst<boolean, number>())
                     .then(swapProd())
             )
-    ))
+    ));
     const result = apply(state.run, 3);
     const result2 = apply(newState.run, 3);
     expect(result).toStrictEqual({
@@ -42,7 +42,7 @@ test('state then', () => {
     expect(result2).toStrictEqual({
         fst: false,
         snd: 7
-    })
+    });
 });
 
 // TODO: ignore, ignoreWith, map
