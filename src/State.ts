@@ -7,10 +7,20 @@ export type StFunc<TState, T> = Func<TState, Prod<T, TState>>;
 // State Monad (a monad is a monoid in the category of endofunctors, what's the problem?)
 export type State<TState, T> = {
     run: StFunc<TState, T>;
-    then: <U>(state: (curr: T) => State<TState, U>) => State<TState, U>;
+
+    then: <U>(
+        state: (curr: T) => State<TState, U>
+    ) => State<TState, U>;
+
     ignore: () => State<TState, One>;
-    ignoreWith: <U>(val: U) => State<TState, U>;
-    map: <U>(mapFunc: Func<T, U>) => State<TState, U>;
+
+    ignoreWith: <U>(
+        val: U
+    ) => State<TState, U>;
+
+    map: <U>(
+        mapFunc: Func<T, U>
+    ) => State<TState, U>;
 };
 
 export function createState<TState, T>(runFunc: StFunc<TState, T>): State<TState, T> {
@@ -24,17 +34,25 @@ export function createState<TState, T>(runFunc: StFunc<TState, T>): State<TState
             return stJoin(this.map(func(state)));
         },
 
-        ignore(this: State<TState, T>): State<TState, One> {
+        ignore(
+            this: State<TState, T>
+        ): State<TState, One> {
             return this.ignoreWith<One>(
                 apply(unit(), void 0)
             );
         },
 
-        ignoreWith: function<U>(this: State<TState, T>, val: U): State<TState, U> {
+        ignoreWith: function<U>(
+            this: State<TState, T>,
+            val: U
+        ): State<TState, U> {
             return this.map(constant(val));
         },
 
-        map: function<U>(this: State<TState, T>, f: Func<T, U>): State<TState, U> {
+        map: function<U>(
+            this: State<TState, T>,
+            f: Func<T, U>
+        ): State<TState, U> {
             return createState<TState, U>(
                 f
                     .timesMap(identity<TState>())
@@ -48,7 +66,9 @@ export function stRun<TState, T>(): Func<State<TState, T>, StFunc<TState, T>> {
     return func(p => p.run);
 };
 
-export function stJoin<TState, T>(f: State<TState, State<TState, T>>): State<TState, T> {
+export function stJoin<TState, T>(
+    f: State<TState, State<TState, T>>
+): State<TState, T> {
     const g = fst<State<TState, T>, TState>()
         .then(stRun<TState, T>())
         .times(snd<State<TState, T>, TState>())
