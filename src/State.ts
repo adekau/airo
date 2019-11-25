@@ -11,7 +11,7 @@ export type State<TState, T> = {
     ignore: () => State<TState, One>;
     ignoreWith: <U>(val: U) => State<TState, U>;
     map: <U>(mapFunc: Func<T, U>) => State<TState, U>;
-}
+};
 
 export function createState<TState, T>(runFunc: StFunc<TState, T>): State<TState, T> {
     return ({
@@ -42,11 +42,11 @@ export function createState<TState, T>(runFunc: StFunc<TState, T>): State<TState
             );
         }
     });
-}
+};
 
 export function stRun<TState, T>(): Func<State<TState, T>, StFunc<TState, T>> {
     return func(p => p.run);
-}
+};
 
 export function stJoin<TState, T>(f: State<TState, State<TState, T>>): State<TState, T> {
     const g = fst<State<TState, T>, TState>()
@@ -58,4 +58,4 @@ export function stJoin<TState, T>(f: State<TState, State<TState, T>>): State<TSt
         .then(applyPair())
         .then(g);
     return createState<TState, T>(apply(curry(h), f));
-}
+};
