@@ -8,9 +8,12 @@ export type CoRef<TState, TErr, T> = {
     set: (_: T) => Coroutine<TState, TErr, One>;
 };
 
+// Coroutine Return
 export type CoRet<TState, T> = Prod<T, TState>;
+// Coroutine Continue
 export type CoCont<TState, TErr, T> = Prod<Coroutine<TState, TErr, T>, TState>;
 export type CoPreRes<TState, TErr, T> = Sum<TErr, CoRes<TState, TErr, T>>;
+// Coroutine result can be either a return or a continue
 export type CoRes<TState, TErr, T> = Sum<CoCont<TState, TErr, T>, CoRet<TState, T>>;
 export type CoFunc<TState, TErr, T> = Func<TState, CoPreRes<TState, TErr, T>>;
 
