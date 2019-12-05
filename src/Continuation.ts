@@ -50,18 +50,22 @@ export const result: ResultOverloads = <B>(v?: any): any =>
 // const r = continueWith(lazy(5), (s: any) => result(s) * 5);
 // console.log(result(r));
 
-// export type Continuation<A, B> = {
-//     bind: <C>(
-//         this: Continuation<A, B>,
-//         f: Func<A, Cont<A, B>>
-//     ) => Continuation<C, B>;
-// };
+export type Continuation<A, B> = {
+    cont: Cont<A, B>,
 
-// export const continuation = <A, B>(f: Func<A, B>): Continuation<A, B> => ({
-//     bind: function<C>(
-//         this: Continuation<A, B>,
-//         f: Func<A, Cont<A, B>>
-//     ): any {
-//         return null;
-//     }
-// });
+    bind: <C>(
+        this: Continuation<A, B>,
+        f: (_: A) => Cont<C, B>
+    ) => Continuation<C, B>;
+};
+
+export const continuation = <A, B>(cont: Cont<A, B>): Continuation<A, B> => ({
+    cont,
+
+    bind: function<C>(
+        this: Continuation<A, B>,
+        f: (_: A) => Cont<C, B>
+    ): Continuation<C, B> {
+        return continuation(bind(this.cont, f));
+    }
+});

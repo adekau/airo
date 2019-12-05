@@ -1,4 +1,4 @@
-import { bind, cont, result } from '../src/Continuation';
+import { bind, cont, continuation, result } from '../src/Continuation';
 
 test('test constant continuation', () => {
     const test = cont("hello")
@@ -19,4 +19,11 @@ test('bind', () => {
     const bindTest = bind(cont(5), (a) => cont(a(0) + 6));
     expect(bindTest(c => result(c))).toBe(11);
     expect(bindTest(result())).toBe(11);
+});
+
+test('continuation wrapper', () => {
+    const c = continuation(cont("hello"))
+        .bind(x => cont(result(x) + '!'))
+        .bind(y => cont(result(y) + ' world!'));
+    expect(c.cont(result())).toBe('hello! world!');
 });
