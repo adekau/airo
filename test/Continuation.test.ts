@@ -27,3 +27,9 @@ test('continuation wrapper', () => {
         .bind(y => cont(result(y) + ' world!'));
     expect(c.cont(result())).toBe('hello! world!');
 });
+
+test('continuation wrapper lambda', () => {
+    const c = continuation(cont<number, number>(x => x*2))
+        .bind(double => cont<number, number>(x => double(x) + x));
+    expect(c.cont(x => x(5))).toBe(15);
+});
