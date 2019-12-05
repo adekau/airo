@@ -32,8 +32,8 @@ export const cont: ContOverloads = <A, B>(v: any) => (callback: any): any => {
  * M(A) -> (A -> M(C)) -> M(C)
  * ((A -> B) -> B) -> (A -> (C -> B) -> B) -> (C -> B) -> B
 **/
-export const bind = <A, B, C>(cont: Cont<A, B>, fn: (a: A) => Cont<C,B>) => (callback: (c: C) => B): B =>
-    cont(contResult => fn(contResult)(callback));
+export const bind = <A, B, C>(continuation: Cont<A, B>, fn: (a: A) => Cont<C,B>) => (callback: (c: C) => B): B =>
+    continuation(contResult => fn(contResult)(callback));
 
 // const lazy = (v: any) => () => v;
 
