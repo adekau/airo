@@ -10,6 +10,11 @@ export type ContOverloads = {
     <B>(v: B): (callback: (_: MonoLambda<{}, B>) => B) => (callback: (_: MonoLambda<{}, B>) => B) => B;
 };
 
+export type ResultOverloads = {
+    <B>(): (l: MonoLambda<{}, B>) => B;
+    <B>(l: MonoLambda<{}, B>): B;
+};
+
 function isMonoLambda<A, B>(arg: unknown): arg is MonoLambda<A, B> {
     return typeof arg === 'function';
 }
@@ -39,7 +44,8 @@ export const bind = <A, B, C>(continuation: Cont<A, B>, fn: (a: A) => Cont<C,B>)
 
 // const continueWith = (lz: any, continuation: any) => lazy(continuation(lz))
 
-// const result = (v: any) => v();
+export const result: ResultOverloads = <B>(v?: any): any =>
+    typeof v === 'function' ? v({}) : (v: MonoLambda<{}, B>) => v({});
 
 // const r = continueWith(lazy(5), (s: any) => result(s) * 5);
 // console.log(result(r));
