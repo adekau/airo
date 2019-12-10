@@ -9,22 +9,32 @@ export type ContOverloads = {
     <B>(v: B): (callback: MonoLambda<MonoLambda<{}, B>, B>) => B;
     <B>(v: B): (callback: MonoLambda<MonoLambda<{}, B>, B>) => (callback: MonoLambda<MonoLambda<{}, B>, B>) => B;
 };
+type AnyFunc = (...args: Array<any>) => any;
+type ContInitializer<A, B extends unknown | void = void> = A extends AnyFunc
+    ? MonoLambda<A, B>
+    : B;
+type ContCallback<A, B> = MonoLambda<MonoLambda<A, B>, ContReturn<B>>;
+type ContReturn<B extends unknown | void = void> = B extends void ? void : B;
+
+export type ContConstructor = {
+    <A, B extends unknown | void = void>(initial: ContInitializer<A, B>): (callback: ContCallback<A, B>) => ContReturn<B>;
+};
 
 export type ResultOverloads = {
     <B>(): (l: MonoLambda<{}, B>) => B;
     <B>(l: MonoLambda<{}, B>): B;
 };
 
-function isMonoLambda<A, B>(arg: unknown): arg is MonoLambda<A, B> {
+function isMonoLambda<A, B extends unknown | void = void>(arg: unknown): arg is MonoLambda<A, B> {
     return typeof arg === 'function';
 }
 
 // v -> callback -> callback(v)
-export const cont: ContOverloads = <A, B>(v: any) => (callback: any): any => {
-    if (isMonoLambda<A, B>(v)) {
-        return callback(v)
+export const cont: ContConstructor = <A, B>(initial: ContInitializer<A, B>) => (callback: ContCallback<A, B>): ContReturn<B> => {
+    if (isMonoLambda<A, B>(initial)) {
+        return callback(initial)
     } else {
-        return callback(() => v as B);
+        return callback(() => initial as B);
     }
 };
 
