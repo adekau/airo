@@ -30,6 +30,7 @@ test('continuation wrapper', () => {
 
 test('continuation wrapper lambda', () => {
     const c = continuation(cont<number, number>(x => x*2))
-        .bind(double => cont<number, number>(x => double(x) + x));
-    expect(c.cont(x => x(5))).toBe(15);
+        .bind(double => cont<number, number>(x => double(x) + x))
+        .bind(s => cont<string, boolean>(t => t.concat(s(14).toString()).length > 6));
+    expect(c.cont(x => x("hello"))).toBe(true);
 });

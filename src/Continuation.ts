@@ -2,12 +2,12 @@ export type Cont<A, B> = (fn: (a: A) => B) => B;
 export type MonoLambda<A, B> = (param: A) => B;
 
 export type ContOverloads = {
-    <A, B>(_: (v: A) => B): (callback: (_: MonoLambda<A, B>) => void) => void;
-    <A, B>(_: (v: A) => B): (callback: (_: MonoLambda<A, B>) => B) => B;
-    <A, B>(_: (v: A) => B): (callback: (_: MonoLambda<A, B>) => B) => (callback: (_: MonoLambda<{}, B>) => B) => B;
-    <B>(v: B): (callback: (_: MonoLambda<{}, B>) => void) => void;
-    <B>(v: B): (callback: (_: MonoLambda<{}, B>) => B) => B;
-    <B>(v: B): (callback: (_: MonoLambda<{}, B>) => B) => (callback: (_: MonoLambda<{}, B>) => B) => B;
+    <A, B>(_: MonoLambda<A, B>): (callback: MonoLambda<MonoLambda<A, B>, void>) => void;
+    <A, B>(_: MonoLambda<A, B>): (callback: MonoLambda<MonoLambda<A, B>, B>) => B;
+    <A, B>(_: MonoLambda<A, B>): (callback: MonoLambda<MonoLambda<A, B>, B>) => (callback:  MonoLambda<MonoLambda<{}, B>, B>) => B;
+    <B>(v: B): (callback: MonoLambda<MonoLambda<{}, B>, void>) => void;
+    <B>(v: B): (callback: MonoLambda<MonoLambda<{}, B>, B>) => B;
+    <B>(v: B): (callback: MonoLambda<MonoLambda<{}, B>, B>) => (callback: MonoLambda<MonoLambda<{}, B>, B>) => B;
 };
 
 export type ResultOverloads = {
