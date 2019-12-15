@@ -1,25 +1,24 @@
+import { Func, func, apply } from './Func';
+
 export type Cont<A, B> = (fn: (a: A) => B) => B;
 export type MonoLambda<A, B> = (param: A) => B;
 
 export type ContOverloads = {
-    <A, B>(_: MonoLambda<A, B>): (callback: MonoLambda<MonoLambda<A, B>, void>) => void;
+    <A, B>(_: MonoLambda<A, B>): <C>(callback: Cont<C, B>) => B;
     <A, B>(_: MonoLambda<A, B>): (callback: MonoLambda<MonoLambda<A, B>, B>) => B;
-    <A, B>(_: MonoLambda<A, B>): (callback: MonoLambda<MonoLambda<A, B>, B>) => (callback:  MonoLambda<MonoLambda<{}, B>, B>) => B;
+    <A, B>(_: MonoLambda<A, B>): (callback: MonoLambda<MonoLambda<A, B>, B>) => (callback:  MonoLambda<MonoLambda<A, B>, B>) => B;
     <B>(v: B): (callback: MonoLambda<MonoLambda<{}, B>, void>) => void;
     <B>(v: B): (callback: MonoLambda<MonoLambda<{}, B>, B>) => B;
     <B>(v: B): (callback: MonoLambda<MonoLambda<{}, B>, B>) => (callback: MonoLambda<MonoLambda<{}, B>, B>) => B;
 };
 type AnyFunc = (...args: Array<any>) => any;
-type ContInitializer<A, B extends unknown | void = void> = A extends AnyFunc
-    ? MonoLambda<A, B>
-    : B;
-type ContCallback<A, B> = MonoLambda<MonoLambda<A, B>, ContReturn<B>>;
-type ContReturn<B extends unknown | void = void> = B extends void ? void : B;
 
-export type ContConstructor = {
-    <A, B extends unknown | void = void>(initial: ContInitializer<A, B>): (callback: ContCallback<A, B>) => ContReturn<B>;
-};
+const something = <A, B>(v: Func<A, B>) => (callback: Func<Func<A, B>, B>) => apply(callback, v);
+const something2 = something(func((x: number) => x * x))(func(z => z.));
 
+type ContConstructor = {
+    <A, B>(initial: A): Cont<A, B> =>
+}
 export type ResultOverloads = {
     <B>(): (l: MonoLambda<{}, B>) => B;
     <B>(l: MonoLambda<{}, B>): B;
@@ -30,7 +29,7 @@ function isMonoLambda<A, B extends unknown | void = void>(arg: unknown): arg is 
 }
 
 // v -> callback -> callback(v)
-export const cont: ContConstructor = <A, B>(initial: ContInitializer<A, B>) => (callback: ContCallback<A, B>): ContReturn<B> => {
+export const cont: ContOverloads = <A, B>(initial: any) => (callback: any): any => {
     if (isMonoLambda<A, B>(initial)) {
         return callback(initial)
     } else {
