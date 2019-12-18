@@ -1,4 +1,4 @@
-import { Func, func, apply } from './Func';
+import { Func, apply, func } from './Func';
 
 export type Cont<A, B> = (fn: (a: A) => B) => B;
 export type MonoLambda<A, B> = (param: A) => B;
@@ -11,14 +11,7 @@ export type ContOverloads = {
     <B>(v: B): (callback: MonoLambda<MonoLambda<{}, B>, B>) => B;
     <B>(v: B): (callback: MonoLambda<MonoLambda<{}, B>, B>) => (callback: MonoLambda<MonoLambda<{}, B>, B>) => B;
 };
-type AnyFunc = (...args: Array<any>) => any;
 
-const something = <A, B>(v: Func<A, B>) => (callback: Func<Func<A, B>, B>) => apply(callback, v);
-const something2 = something(func((x: number) => x * x))(func(z => z.));
-
-type ContConstructor = {
-    <A, B>(initial: A): Cont<A, B> =>
-}
 export type ResultOverloads = {
     <B>(): (l: MonoLambda<{}, B>) => B;
     <B>(l: MonoLambda<{}, B>): B;
