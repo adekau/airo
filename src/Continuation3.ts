@@ -10,9 +10,9 @@
   * Continuation Monad
   * @param fn
   */
-export class Continuation<T extends unknown = unknown> {
+export class Continuation<T extends unknown> {
     // Lift: F -> C[F]
-    constructor(public fn: <U extends unknown = unknown>(resolve: (result: T) => U) => U) { }
+    constructor(public fn: (resolve: (result: T) => any) => any) { }
 
     // Unit: A -> C[F(A)]
     public static of<T extends unknown = unknown>(val: T): Continuation<T> {

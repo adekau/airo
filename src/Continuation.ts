@@ -1,12 +1,10 @@
-import { Func, apply, func } from './Func';
-
 export type Cont<A, B> = (fn: (a: A) => B) => B;
 export type MonoLambda<A, B> = (param: A) => B;
 
 export type ContOverloads = {
-    <A, B>(_: MonoLambda<A, B>): <C>(callback: Cont<C, B>) => B;
+    <A, B>(_: MonoLambda<A, B>): (callback: MonoLambda<MonoLambda<A, B>, void>) => void;
     <A, B>(_: MonoLambda<A, B>): (callback: MonoLambda<MonoLambda<A, B>, B>) => B;
-    <A, B>(_: MonoLambda<A, B>): (callback: MonoLambda<MonoLambda<A, B>, B>) => (callback:  MonoLambda<MonoLambda<A, B>, B>) => B;
+    <A, B>(_: MonoLambda<A, B>): (callback: MonoLambda<MonoLambda<A, B>, B>) => (callback:  MonoLambda<MonoLambda<{}, B>, B>) => B;
     <B>(v: B): (callback: MonoLambda<MonoLambda<{}, B>, void>) => void;
     <B>(v: B): (callback: MonoLambda<MonoLambda<{}, B>, B>) => B;
     <B>(v: B): (callback: MonoLambda<MonoLambda<{}, B>, B>) => (callback: MonoLambda<MonoLambda<{}, B>, B>) => B;
@@ -17,16 +15,16 @@ export type ResultOverloads = {
     <B>(l: MonoLambda<{}, B>): B;
 };
 
-function isMonoLambda<A, B extends unknown | void = void>(arg: unknown): arg is MonoLambda<A, B> {
+function isMonoLambda<A, B>(arg: unknown): arg is MonoLambda<A, B> {
     return typeof arg === 'function';
 }
 
 // v -> callback -> callback(v)
-export const cont: ContOverloads = <A, B>(initial: any) => (callback: any): any => {
-    if (isMonoLambda<A, B>(initial)) {
-        return callback(initial)
+export const cont: ContOverloads = <A, B>(v: any) => (callback: any): any => {
+    if (isMonoLambda<A, B>(v)) {
+        return callback(v)
     } else {
-        return callback(() => initial as B);
+        return callback(() => v as B);
     }
 };
 
