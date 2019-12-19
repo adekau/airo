@@ -6,9 +6,3 @@ test('cont2', () => {
         .bind(cont(y => y.length));
     expect(r.run(15)).toBe(3);
 });
-
-test('async', () => {
-    const r = cont((a: number) => setTimeout(() => a, 500));
-    const result = r.run(500);
-    console.log(result);
-});
