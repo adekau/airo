@@ -1,5 +1,3 @@
-import { Func, func, apply } from './Func';
-
 /** some definitions:
  *  C[F] = continuation monad. F in this case is a function.
  *  lift/return: F -> C[F]
@@ -7,24 +5,11 @@ import { Func, func, apply } from './Func';
  *  bind (flatMap): C[F] -> (F -> C[F2]) -> C[F2]
  *  map: C[F] -> (F -> F2) -> C[F2]
  */
-// export type Cont<A, B> = {
-//     // F: TDomain -> TRange
-//     fn: MonoLambda<A, B>;
 
-//     // C[F] -> F
-//     flatten: (this: Cont<A, B>) => MonoLambda<A, B>;
-
-//     // C[F] -> (F -> F2) -> C[F2]
-//     map: <C>(this: Cont<A, B>, mapFn: (F: MonoLambda<A, B>) => MonoLambda<B, C>) => Cont<B, C>;
-
-//     // (AKA FlatMap... which flattens and then maps.)
-//     // C[F] -> (F -> C[F2]) -> C[F2]
-//     bind: <C>(this: Cont<A, B>, mapFn: (F: MonoLambda<A, B>) => Cont<B, C>) => Cont<B, C>;
-
-//     // eval(F, A)
-//     run: (this: Cont<A, B>, val: A) => B;
-// }
-
+ /**
+  * Continuation Monad
+  * @param fn
+  */
 export class Continuation<T extends unknown = unknown> {
     // Lift: F -> C[F]
     constructor(public fn: <U extends unknown = unknown>(resolve: (result: T) => U) => U) { }
@@ -59,36 +44,3 @@ export class Continuation<T extends unknown = unknown> {
         return this.bind(result => Continuation.of(f(result)));
     }
 }
-
-// This is lift/return. Wraps a given function in a continuation monad.
-// F: A -> B
-// C: Continuation Monad
-// F -> C[F]
-// export const cont = <TDomain, TRange>(contFunc: MonoLambda<TDomain, TRange>): Cont<TDomain, TRange> => ({
-//     // F: TDomain -> TRange
-//     fn: contFunc,
-
-//     // C[F] -> F
-//     flatten: function (this: Cont<TDomain, TRange>): MonoLambda<TDomain, TRange> {
-//         return this.fn;
-//     },
-
-//     // C[F] -> (F -> F2) -> C[F2]
-//     map: function <TMapTo>(
-//         this: Cont<TDomain, TRange>,
-//         mapFn: (F: MonoLambda<TDomain, TRange>) => MonoLambda<TRange, TMapTo>
-//     ): Cont<TRange, TMapTo> {
-//         return cont(mapFn(this.flatten()));
-//     },
-
-//     // (AKA FlatMap... which flattens and then maps.)
-//     // C[F] -> (F -> C[F2]) -> C[F2]
-//     bind: function <TMapTo>(this: Cont<TDomain, TRange>, mapFn: (F: Func<TDomain, TRange>) => Cont<TRange, TMapTo>): Cont<TRange, TMapTo> {
-//         return mapFn(this.flatten());
-//     },
-
-//     // eval(F, A)
-//     run: function (this: Cont<TDomain, TRange>, val: TDomain): TRange {
-//         return apply(this.fn, val);
-//     }
-// });
