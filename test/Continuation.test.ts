@@ -21,8 +21,8 @@ test('map', () => {
 
 test('async', (done) => {
     const c = Cont.of('hello')
-        .bind(result => new Cont<string>(resolve => { return setTimeout(() => resolve(result + ' world'), 1000); }))
-        .bind(result => new Cont<string>(resolve => { return setTimeout(() => resolve(result + '!'), 1000); }));
+        .bind(result => new Cont<string>(resolve => { return setTimeout(() => resolve(result + ' world'), 250); }))
+        .bind(result => new Cont<string>(resolve => { return setTimeout(() => resolve(result + '!'), 250); }));
     c.run((result) => {
         expect(result).toBe('hello world!');
         done();
