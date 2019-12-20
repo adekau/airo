@@ -12,13 +12,14 @@
   */
 export class Cont<T extends unknown> {
     // Lift: F -> C[F]
-    constructor(public fn: (resolve: (result: T) => any) => any) { }
+    constructor(public fn: (resolve: (result: T) => void) => unknown) { }
 
     // Unit: A -> C[F(A)]
     public static of<T extends unknown = unknown>(val: T): Cont<T> {
         return new Cont<T>(resolve => resolve(val));
     }
 
+    // Identity: T -> T
     public static id<T extends unknown = unknown>(): (result: T) => T {
         return (result: T) => result;
     }
@@ -36,7 +37,7 @@ export class Cont<T extends unknown> {
 
     // Eval: C[F] -> (T -> U) -> U
     public run<U extends unknown = unknown>(f: (result: T) => U): U {
-        return this.fn(f);
+        return <U>this.fn(f);
     }
 
     // map: C[F] -> (F -> F2) -> C[F2]
