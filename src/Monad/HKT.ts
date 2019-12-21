@@ -1,6 +1,10 @@
-export type HKT<TId, V> = {
+export type HKT<TId, A> = {
     readonly _HKT: TId;
-    readonly _val: V;
+    readonly _val: A;
+};
+
+export type HKT2<TId, E, A> = HKT<TId, A> & {
+    readonly _error: E;
 };
 
 /**
@@ -15,6 +19,11 @@ export type HKT<TId, V> = {
  * };
  * ```
  */
-export interface HKTToKind<A> {}
+export interface HKTToKind<A> {};
+export interface HKTToKind2<E, A> {};
+
 export type HKTS = keyof HKTToKind<any>;
+export type HKTS2 = keyof HKTToKind2<any, any>;
+
 export type Kind<TId extends HKTS, A> = TId extends HKTS ? HKTToKind<A>[TId] : any;
+export type Kind2<TId extends HKTS2, E, A> = TId extends HKTS2 ? HKTToKind2<E, A>[TId] : any;

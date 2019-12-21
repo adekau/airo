@@ -1,6 +1,7 @@
-import { Applicative, Applicative1 } from './Applicative';
-import { Bindable, Bindable1 } from './Bindable';
-import { HKTS } from './HKT';
+import { Applicative, Applicative1, Applicative2 } from './Applicative';
+import { Bindable, Bindable1, Bindable2 } from './Bindable';
+import { HKTS, HKTS2 } from './HKT';
 
 export type Monad<F> = Applicative<F> & Bindable<F>;
 export type Monad1<F extends HKTS> = Applicative1<F> & Bindable1<F>;
+export type Monad2<F extends HKTS2> = Applicative2<F> & Bindable2<F>;
