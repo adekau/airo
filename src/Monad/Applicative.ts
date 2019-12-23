@@ -1,4 +1,4 @@
-import { Apply, Apply1, Apply2 } from './Apply';
+import { Apply, Apply1, Apply2, PipeableApply } from './Apply';
 import { HKT, HKTS, Kind, Kind2, HKTS2 } from './HKT';
 
 export type Applicative<F> = Apply<F> & {

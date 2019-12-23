@@ -1,4 +1,4 @@
-import { Maybe, Just, Nothing } from '../../src/Monad/Maybe';
+import { Maybe, Just, Nothing, apFirst, apSecond } from '../../src/Monad/Maybe';
 
 test('just', () => {
     expect(Maybe.of(55)).toStrictEqual(Just(55));
@@ -18,4 +18,13 @@ test('map', () => {
 
 test('apply', () => {
     expect(Maybe.ap(Just((a: boolean) => !a), Just(false))).toStrictEqual(Just(true));
+});
+
+test('pipeable fn', () => {
+    expect(
+        apFirst(Just(5))(Just('hi'))
+    ).toStrictEqual(Just('hi'));
+    expect(
+        apSecond(Just(5))(Just('hi'))
+    ).toStrictEqual(Just(5));
 });

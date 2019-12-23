@@ -1,4 +1,5 @@
 import { Monad1 } from './Monad';
+import { pipeable } from './Pipeable';
 
 // Declares Maybe as a valid higher-kinded type.
 // Re-declaring HKTToKind here causes the declaration to merge (HKTToKind & { ... })
@@ -44,3 +45,13 @@ export const Maybe: Monad1<HKTId> = {
     bind: <A, B>(fa: Maybe<A>, f: (a: A) => Maybe<B>): Maybe<B> =>
         isNothing(fa) ? Nothing : f(fa.value)
 };
+
+export const {
+    ap,
+    apFirst,
+    apSecond,
+    bind,
+    bindFirst,
+    flatten,
+    map
+} = pipeable(Maybe);
