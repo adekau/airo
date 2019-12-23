@@ -4,13 +4,16 @@ import { Functor, Functor1, Functor2, PipeableFunctor1, PipeableFunctor2, Pipeab
 import { HKTS, HKTS2, HKT } from './HKT';
 
 const isFunctor = <F>(x: unknown): x is Functor<F> =>
-    Object.prototype.hasOwnProperty.call(x, 'map') && typeof (x as any).map === 'function';
+    Object.prototype.hasOwnProperty.call(x, 'map')
+    && typeof (x as any).map === 'function';
 
 const isApply = <F>(x: unknown): x is Apply<F> =>
-    Object.prototype.hasOwnProperty.call(x, 'ap') && typeof (x as any).ap === 'function';
+    Object.prototype.hasOwnProperty.call(x, 'ap')
+    && typeof (x as any).ap === 'function';
 
 const isBindable = <F>(x: unknown): x is Bindable<F> =>
-    Object.prototype.hasOwnProperty.call(x, 'bind') && typeof (x as any).bind === 'function';
+    Object.prototype.hasOwnProperty.call(x, 'bind')
+    && typeof (x as any).bind === 'function';
 
 export function pipeable<F extends HKTS2, I>(
     I: { HKT: F } & I
@@ -35,23 +38,37 @@ export function pipeable<F, I>(
 ): any {
     const r: any = {};
     if (isFunctor<F>(I)) {
-        const map: PipeableFunctor<F>['map'] = f => fa => I.map(fa, f);
+        const map: PipeableFunctor<F>['map'] = f => fa =>
+            I.map(fa, f);
+
         r.map = map;
     }
 
     if (isApply<F>(I)) {
-        const ap: PipeableApply<F>['ap'] = fa => fab => I.ap(fab, fa);
-        const apFirst: PipeableApply<F>['apFirst'] = fb => fa => I.ap(I.map(fa, a => () => a), fb);
-        const apSecond: PipeableApply<F>['apSecond'] = <B>(fb: HKT<F, B>) => fa => I.ap(I.map(fa, () => (b: B) => b), fb);
+        const ap: PipeableApply<F>['ap'] = fa => fab =>
+            I.ap(fab, fa);
+
+        const apFirst: PipeableApply<F>['apFirst'] = fb => fa =>
+            I.ap(I.map(fa, a => () => a), fb);
+
+        const apSecond: PipeableApply<F>['apSecond'] = <B>(fb: HKT<F, B>) => fa =>
+            I.ap(I.map(fa, () => (b: B) => b), fb);
+
         r.ap = ap;
         r.apFirst = apFirst;
         r.apSecond = apSecond;
     }
 
     if (isBindable<F>(I)) {
-        const bind: PipeableBindable<F>['bind'] = f => fa => I.bind(fa, f);
-        const bindFirst: PipeableBindable<F>['bindFirst'] = f => fa => I.bind(fa, a => I.map(f(a), () => a));
-        const flatten: PipeableBindable<F>['flatten'] = mma => I.bind(mma, a => a);
+        const bind: PipeableBindable<F>['bind'] = f => fa =>
+            I.bind(fa, f);
+
+        const bindFirst: PipeableBindable<F>['bindFirst'] = f => fa =>
+            I.bind(fa, a => I.map(f(a), () => a));
+
+        const flatten: PipeableBindable<F>['flatten'] = mma =>
+            I.bind(mma, a => a);
+
         r.bind = bind;
         r.bindFirst = bindFirst;
         r.flatten = flatten;
