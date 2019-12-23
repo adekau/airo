@@ -1,4 +1,4 @@
-import { HKT, HKTS, Kind, HKTS2, Kind2 } from './HKT';
+import { HKT, HKTS, HKTS2, Kind, Kind2 } from './HKT';
 
 export type Functor<F> = {
     readonly HKT: F;

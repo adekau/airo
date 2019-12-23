@@ -1,5 +1,5 @@
 import { Apply, Apply1, Apply2, PipeableApply, PipeableApply1, PipeableApply2 } from './Apply';
-import { HKT, HKTS, Kind, HKTS2, Kind2 } from './HKT';
+import { HKT, HKTS, HKTS2, Kind, Kind2 } from './HKT';
 
 export type Bindable<F> = Apply<F> & {
     readonly bind: <A, B>(fa: HKT<F, A>, f: (a: A) => HKT<F, B>) => HKT<F, B>;
@@ -28,5 +28,5 @@ export type PipeableBindable1<F extends HKTS> = PipeableApply1<F> & {
 export type PipeableBindable2<F extends HKTS2> = PipeableApply2<F> & {
     readonly bind: <E, A, B>(f: (a: A) => Kind2<F, E, B>) => (fa: Kind2<F, E, A>) => Kind2<F, E, B>;
     readonly bindFirst: <E, A, B>(f: (a: A) => Kind2<F, E, B>) => (fa: Kind2<F, E, A>) => Kind2<F, E, A>;
-    readonly flatten: <E, A>(mma: Kind2<F, E, Kind<F, A>>) => Kind2<F, E, A>;
+    readonly flatten: <E, A>(mma: Kind2<F, E, Kind2<F, E, A>>) => Kind2<F, E, A>;
 };

@@ -11,7 +11,7 @@ export type IO<A> = () => A;
 export const HKTId = 'IO';
 export type HKTId = typeof HKTId;
 
-export const of = <A>(a: A): IO<A> => 
+export const of = <A>(a: A): IO<A> =>
     () => a;
 
 export const IO: Monad1<HKTId> = {

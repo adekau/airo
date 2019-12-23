@@ -1,7 +1,7 @@
 import { Apply, Apply1, Apply2, PipeableApply, PipeableApply1, PipeableApply2 } from './Apply';
 import { Bindable, Bindable1, Bindable2, PipeableBindable, PipeableBindable1, PipeableBindable2 } from './Bindable';
-import { Functor, Functor1, Functor2, PipeableFunctor1, PipeableFunctor2, PipeableFunctor } from './Functor';
-import { HKTS, HKTS2, HKT } from './HKT';
+import { Functor, Functor1, Functor2, PipeableFunctor, PipeableFunctor1, PipeableFunctor2 } from './Functor';
+import { HKT, HKTS, HKTS2 } from './HKT';
 
 const isFunctor = <F>(x: unknown): x is Functor<F> =>
     Object.prototype.hasOwnProperty.call(x, 'map')
@@ -40,7 +40,6 @@ export function pipeable<F, I>(
     if (isFunctor<F>(I)) {
         const map: PipeableFunctor<F>['map'] = f => fa =>
             I.map(fa, f);
-
         r.map = map;
     }
 

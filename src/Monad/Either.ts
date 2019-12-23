@@ -26,15 +26,15 @@ export const inr = <E = never, A = never>(right: A): Either<E, A> => ({ _tag: 'R
 export const isLeft = <E, A>(ma: Either<E, A>): ma is Left<E> => ma._tag === 'Left';
 export const isRight = <E, A>(ma: Either<E, A>): ma is Right<A> => ma._tag === 'Right';
 
-export const fold = <E, A, B>(onLeft: (left: E) => B, onRight: (right: A) => B) => 
+export const fold = <E, A, B>(onLeft: (left: E) => B, onRight: (right: A) => B) =>
     (ma: Either<E, A>) => isLeft(ma) ? onLeft(ma.left) : onRight(ma.right);
 
 export const Either: Monad2<HKTId> = {
     HKT: HKTId,
 
-    map: <E, A, B>(fa: Either<E, A>, f: (a: A) => B): Either<E, B> => 
+    map: <E, A, B>(fa: Either<E, A>, f: (a: A) => B): Either<E, B> =>
         isLeft(fa) ? fa : inr(f(fa.right)),
-    
+
     ap: (fab, fa) => {
         if (isLeft(fab))
             return fab;
