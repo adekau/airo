@@ -1,4 +1,5 @@
 import { Monad2 } from "./Monad";
+import { pipeable } from "./Pipeable";
 
 declare module './HKT' {
     interface HKTToKind2<E, A> {
@@ -47,3 +48,13 @@ export const Either: Monad2<HKTId> = {
 
     bind: (fa, f) => (isLeft(fa)) ? fa : f(fa.right)
 };
+
+export const { 
+    ap, 
+    apFirst, 
+    apSecond, 
+    bind, 
+    bindFirst, 
+    flatten, 
+    map 
+} = pipeable(Either);
