@@ -1,4 +1,5 @@
 import { Monad1 } from './Monad';
+import { pipeable } from './Pipeable';
 
 declare module './HKT' {
     interface HKTToKind<A> {
@@ -25,3 +26,13 @@ export const IO: Monad1<HKTId> = {
 
     bind: (fa, f) => f(fa())
 };
+
+export const {
+    ap,
+    apFirst,
+    apSecond,
+    bind,
+    bindFirst,
+    flatten,
+    map
+} = pipeable(IO);
