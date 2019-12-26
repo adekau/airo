@@ -95,7 +95,7 @@ test('Either semigroup', () => {
     const allEither = eitherSg<string, boolean>(semigroupAll);
     const fnSgEither = getFunctionSemigroup(allEither)<Point>();
     const ptNot0 = (p: Point) => p.x === 0 ? inl('error in x') : inr(true);
-    const ptLess0 = (p: Point) => p.y <= 0 ? inr(true) : inl('error in y');
+    const ptLess0 = (p: Point) => p.y < 0 ? inr(true) : p.y > 0 ? inl('error in y') : inr(false);
     const testFn = fnSgEither.concat(ptNot0, ptLess0);
 
     expect(testFn(p1)).toStrictEqual(inl('error in y'));
@@ -104,4 +104,5 @@ test('Either semigroup', () => {
     expect(testFn(p4)).toStrictEqual(inl('error in y'));
     expect(testFn({ x: 0, y: -4 })).toStrictEqual(inl('error in x'));
     expect(testFn({ x: -1, y: -1 })).toStrictEqual(inr(true));
+    expect(testFn({ x: -1, y: 0 })).toStrictEqual(inr(false));
 });
