@@ -1,5 +1,6 @@
 import { Monad2 } from "./Monad";
 import { pipeable } from "./Pipeable";
+import { Semigroup } from "./Semigroup";
 
 declare module './HKT' {
     interface HKTToKind2<E, A> {
@@ -29,6 +30,10 @@ export const isRight = <E, A>(ma: Either<E, A>): ma is Right<A> => ma._tag === '
 
 export const fold = <E, A, B>(onLeft: (left: E) => B, onRight: (right: A) => B) =>
     (ma: Either<E, A>) => isLeft(ma) ? onLeft(ma.left) : onRight(ma.right);
+
+export const getApplySemigroup = <E, A>(s: Semigroup<A>): Semigroup<Either<E, A>> => ({
+    concat: (x, y) => isLeft(x) ? x : isLeft(y) ? y : inr(s.concat(x.right, y.right))
+});
 
 export const Either: Monad2<HKTId> = {
     HKT: HKTId,
