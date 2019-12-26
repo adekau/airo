@@ -56,5 +56,6 @@ export const {
     bind, 
     bindFirst, 
     flatten, 
-    map 
+    map,
+    of
 } = pipeable(Either);

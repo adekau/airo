@@ -1,3 +1,11 @@
+import {
+    Applicative,
+    Applicative1,
+    Applicative2,
+    PipeableApplicative,
+    PipeableApplicative1,
+    PipeableApplicative2,
+} from './Applicative';
 import { Apply, Apply1, Apply2, PipeableApply, PipeableApply1, PipeableApply2 } from './Apply';
 import { Bindable, Bindable1, Bindable2, PipeableBindable, PipeableBindable1, PipeableBindable2 } from './Bindable';
 import { Functor, Functor1, Functor2, PipeableFunctor, PipeableFunctor1, PipeableFunctor2 } from './Functor';
@@ -102,53 +110,12 @@ export function pipe<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
     fn12: (t12: T12) => T13
 ): (t1: T1) => T13;
 export function pipe(
-    fn1: Function,
-    fn2?: Function,
-    fn3?: Function,
-    fn4?: Function,
-    fn5?: Function,
-    fn6?: Function,
-    fn7?: Function,
-    fn8?: Function,
-    fn9?: Function,
-    fn10?: Function,
-    fn11?: Function,
-    fn12?: Function
+    ...fns: Function[]
 ): Function {
-    const args = arguments;
-    return function (argument: unknown): unknown {
-        switch(args.length) {
-            case 1:
-                return fn1(argument);
-            case 2:
-                return fn2!(fn1(argument));
-            case 3:
-                return fn3!(fn2!(fn1(argument)));
-            case 4:
-                return fn4!(fn3!(fn2!(fn1(argument))));
-            case 5:
-                return fn5!(fn4!(fn3!(fn2!(fn1(argument)))));
-            case 6:
-                return fn6!(fn5!(fn4!(fn3!(fn2!(fn1(argument))))));
-            case 7:
-                return fn7!(fn6!(fn5!(fn4!(fn3!(fn2!(fn1(argument)))))));
-            case 8:
-                return fn8!(fn7!(fn6!(fn5!(fn4!(fn3!(fn2!(fn1(argument))))))));
-            case 9:
-                return fn9!(fn8!(fn7!(fn6!(fn5!(fn4!(fn3!(fn2!(fn1(argument)))))))));
-            case 10:
-                return fn10!(fn9!(fn8!(fn7!(fn6!(fn5!(fn4!(fn3!(fn2!(fn1(argument))))))))));
-            case 11:
-                return fn11!(fn10!(fn9!(fn8!(fn7!(fn6!(fn5!(fn4!(fn3!(fn2!(fn1(argument)))))))))));
-            case 12:
-                return fn12!(fn11!(fn10!(fn9!(fn8!(fn7!(fn6!(fn5!(fn4!(fn3!(fn2!(fn1(argument))))))))))));
-            default:
-                throw Error('Unexpected number of arguments to `pipe`.');
-        }
-    };
+    if (!fns.length)
+        throw Error('Unexpected number of arguments passed to `pipe`.');
+    return fns.reduce((prevFn, curFn) => (arg: unknown) => curFn(prevFn(arg)));
 }
-
-pipe((x: number) => x + 1, x => 5, x => 'hi', x => ({ something: 5 }));
 
 const isFunctor = <F>(x: unknown): x is Functor<F> =>
     Object.prototype.hasOwnProperty.call(x, 'map')
@@ -162,24 +129,43 @@ const isBindable = <F>(x: unknown): x is Bindable<F> =>
     Object.prototype.hasOwnProperty.call(x, 'bind')
     && typeof (x as any).bind === 'function';
 
+const isApplicative = <F>(x: unknown): x is Applicative<F> =>
+    Object.prototype.hasOwnProperty.call(x, 'of')
+    && typeof (x as any).of === 'function';
+
 export function pipeable<F extends HKTS2, I>(
     I: { HKT: F } & I
-): (I extends Bindable2<F> ? PipeableBindable2<F> :
+): (
+    I extends Bindable2<F> ? PipeableBindable2<F> :
     I extends Apply2<F> ? PipeableApply2<F> :
     I extends Functor2<F> ? PipeableFunctor2<F> :
-    {});
+    {}
+) & (
+        I extends Applicative2<F> ? PipeableApplicative2<F> :
+        {}
+    );
 export function pipeable<F extends HKTS, I>(
     I: { HKT: F } & I
-): (I extends Bindable1<F> ? PipeableBindable1<F> :
+): (
+    I extends Bindable1<F> ? PipeableBindable1<F> :
     I extends Apply1<F> ? PipeableApply1<F> :
     I extends Functor1<F> ? PipeableFunctor1<F> :
-    {});
+    {}
+) & (
+        I extends Applicative1<F> ? PipeableApplicative1<F> :
+        {}
+    );
 export function pipeable<F, I>(
     I: { HKT: F } & I
-): (I extends Bindable<F> ? PipeableBindable<F> :
+): (
+    I extends Bindable<F> ? PipeableBindable<F> :
     I extends Apply<F> ? PipeableApply<F> :
     I extends Functor<F> ? PipeableFunctor<F> :
-    {});
+    {}
+) & (
+        I extends Applicative<F> ? PipeableApplicative<F> :
+        {}
+    );
 export function pipeable<F, I>(
     I: { HKT: F } & I
 ): any {
@@ -218,6 +204,13 @@ export function pipeable<F, I>(
         r.bind = bind;
         r.bindFirst = bindFirst;
         r.flatten = flatten;
+    }
+
+    if (isApplicative<F>(I)) {
+        const of: PipeableApplicative<F>['of'] = () => a => 
+            I.of(a);
+        
+        r.of = of;
     }
 
     return r;
