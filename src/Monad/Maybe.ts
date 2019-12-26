@@ -1,5 +1,6 @@
 import { Monad1 } from './Monad';
 import { pipeable } from './Pipeable';
+import { Semigroup } from './Semigroup';
 
 // Declares Maybe as a valid higher-kinded type.
 // Re-declaring HKTToKind here causes the declaration to merge (HKTToKind & { ... })
@@ -30,6 +31,10 @@ export const isJust = <A>(m: Maybe<A>): m is Just<A> => m._tag === 'Just';
 export const isNothing = <A>(m: Maybe<A>): m is Nothing => m._tag === 'Nothing';
 export const fold = <A, B>(onNothing: () => B, onJust: (value: A) => B): ((m: Maybe<A>) => B) =>
     m => (isNothing(m) ? onNothing() : onJust(m.value));
+
+export const getApplySemigroup = <A>(s: Semigroup<A>): Semigroup<Maybe<A>> => ({
+    concat: (x, y) => (isJust(x) && isJust(y)) ? Just(s.concat(x.value, y.value)) : Nothing
+});
 
 export const Maybe: Monad1<HKTId> = {
     HKT: HKTId,

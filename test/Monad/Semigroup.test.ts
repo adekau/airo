@@ -1,9 +1,12 @@
+import { getApplySemigroup, Just, Nothing } from '../../src/Monad/Maybe';
 import {
+    fold,
     getFunctionSemigroup,
     getStructSemigroup,
     Semigroup,
     semigroupAll,
     semigroupAny,
+    semigroupProd,
     semigroupSum,
 } from '../../src/Monad/Semigroup';
 
@@ -67,4 +70,22 @@ test('function or semigroup', () => {
     expect(checkPoint(p2)).toBe(true);
     expect(checkPoint(p3)).toBe(true);
     expect(checkPoint(p4)).toBe(false);
+});
+
+test('fold', () => {
+    const sum = fold(semigroupSum);
+    const prod = fold(semigroupProd);
+    
+    expect(sum(0, [1, 2, 3, 4])).toBe(10);
+    expect(prod(1, [1, 2, 3, 4])).toBe(24);
+});
+
+test('Monad semigroup', () => {
+    const addMaybe = getApplySemigroup(semigroupSum);
+    const multMaybe = getApplySemigroup(semigroupProd);
+
+    expect(addMaybe.concat(Just(5), Just(11))).toStrictEqual(Just(16));
+    expect(addMaybe.concat(Just(5), Nothing)).toStrictEqual(Nothing);
+    expect(multMaybe.concat(Just(5), Just(11))).toStrictEqual(Just(55));
+    expect(multMaybe.concat(Just(5), Nothing)).toStrictEqual(Nothing);
 });
