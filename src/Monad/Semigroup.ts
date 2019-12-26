@@ -3,6 +3,8 @@ import { Magma } from './Magma';
 
 /**
  * A semigroup is a Magma where `concat` is associative.
+ * e.g. `(A, +)` with associativity such that:
+ *  `+: (x: A, y: A) => A` has the following equivalency `+(+(x, y), z) == +(x, +(y, z))`
  */
 export type Semigroup<A> = Magma<A>;
 
