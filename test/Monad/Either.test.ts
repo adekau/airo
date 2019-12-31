@@ -31,4 +31,25 @@ describe('Either Monad', () => {
         const result = Either.ap(fn, inr(16));
         expect(result).toEqual(inr(32));
     });
+
+    it('returns left if fn is left', () => {
+        const fn = inl('no fn here');
+        const result = Either.ap(fn, inr(16));
+        expect(result).toEqual(inl('no fn here'));
+    });
+
+    it('returns left if "a" is left', () => {
+        const fn = inr((x: number) => x * 2);
+        const result = Either.ap(fn, inl('no val here'));
+        expect(result).toEqual(inl('no val here'));
+    });
+
+    it('constructs', () => {
+        expect(Either.of('hello')).toEqual(inr('hello'));
+    });
+
+    it('can be chained', () => {
+        const first = Either.of('hi');
+        expect(Either.bind(first, a => inr(a + ' world'))).toEqual(inr('hi world'));
+    });
 });
