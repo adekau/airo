@@ -1,4 +1,4 @@
-import { Either, inl, inr } from '../../src/Monad/Either';
+import { Either, inl, inr, fold } from '../../src/Monad/Either';
 
 const badVal = 'Bad value';
 const falsyIsError = <T extends unknown>(val: T): Either<string, T> =>
@@ -51,5 +51,11 @@ describe('Either Monad', () => {
     it('can be chained', () => {
         const first = Either.of('hi');
         expect(Either.bind(first, a => inr(a + ' world'))).toEqual(inr('hi world'));
+    });
+
+    it('is foldable', () => {
+        const first = Either.of<string, number>(15);
+        const result = fold<string, number, boolean>(_ => false, x => x > 5 ? true : false)(first);
+        expect(result).toBe(true);
     });
 });
