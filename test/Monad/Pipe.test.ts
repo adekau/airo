@@ -7,19 +7,31 @@ const stringify = (v: number) => v.toString();
 const exclaim = (v: string) => v + '!';
 
 it('simple pipe', () => {
-    const newFn = pipe(
+    const mb = pipe(
+        5,
         incrX(5),
         decrX(2),
         stringify,
         exclaim
     );
-    expect(newFn(5)).toBe('8!');
+    expect(mb).toBe('8!');
 });
 
 it('monad pipe', () => {
-    const newFn = pipe(
-        of<number>(),
+    const mb = pipe(
+        4,
+        of(),
         map(incrX(5))
     );
-    expect(newFn(4)).toEqual(Just(9));
+    expect(mb).toEqual(Just(9));
+});
+
+it('throws error with 0 args', (done) => {
+    try {
+        expect((pipe as any)());
+    } catch {
+        done();
+        return;
+    }
+    fail('Should not execute pipe');
 });
