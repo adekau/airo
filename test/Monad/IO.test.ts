@@ -26,10 +26,10 @@ describe('IO Monad', () => {
         const t = pipe(
             5,
             of,
-            map(x => x! + 5),
+            map(x => x + 5),
             map(x => x.toString()),
             bind(x => of(x + '!'))
         );
-        expect(t()).toBe('');
+        expect(t()).toBe('10!');
     });
 });
