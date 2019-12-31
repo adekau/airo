@@ -34,11 +34,13 @@ describe('IO Monad', () => {
     });
 
     it('pipes with actual io', () => {
+        console.log = jasmine.createSpy('log');
         const t = pipe(
             5,
             of,
             map(x => console.log(x))
         );
         expect(t).not.toThrow();
+        expect(console.log).toHaveBeenCalled();
     });
 });
