@@ -32,4 +32,13 @@ describe('IO Monad', () => {
         );
         expect(t()).toBe('10!');
     });
+
+    it('pipes with actual io', () => {
+        const t = pipe(
+            5,
+            of,
+            map(x => console.log(x))
+        );
+        expect(t).not.toThrow();
+    });
 });
