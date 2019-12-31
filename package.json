@@ -1,7 +1,7 @@
 {
-    "name": "tsbccc",
+    "name": "fog-ts",
     "version": "1.0.0",
-    "description": "typescript bi-cartesian closed categories",
+    "description": "Functional Programming in TS",
     "main": "index.ts",
     "author": "Alex Dekau",
     "license": "MIT",
