@@ -1,5 +1,5 @@
+import { getApplySemigroup as eitherSg, inl, inr } from '../../src/Monad/Either';
 import { getApplySemigroup, Just, Nothing } from '../../src/Monad/Maybe';
-import { getApplySemigroup as eitherSg, inr, inl } from '../../src/Monad/Either';
 import {
     fold,
     getFunctionSemigroup,
@@ -43,14 +43,14 @@ const p4: Point = {
     y: 5
 };
 
-test('add two points', () => {
-    expect(sgPoint.concat(p1, p2)).toStrictEqual({
+it('add two points', () => {
+    expect(sgPoint.concat(p1, p2)).toEqual({
         x: 7,
         y: 7
     });
 });
 
-test('function semigroup', () => {
+it('function semigroup', () => {
     const isPositiveX = (p: Point) => p.x >= 0;
     const isNegativeY = (p: Point) => p.y <= 0;
     const checkPoint = sgPred.concat(isPositiveX, isNegativeY);
@@ -61,7 +61,7 @@ test('function semigroup', () => {
     expect(checkPoint(p4)).toBe(false);
 });
 
-test('function or semigroup', () => {
+it('function or semigroup', () => {
     const sgOrPred: Semigroup<(p: Point) => boolean> = getFunctionSemigroup(semigroupAny)();
     const isPositiveX = (p: Point) => p.x >= 0;
     const isNegativeY = (p: Point) => p.y <= 0;
@@ -73,36 +73,36 @@ test('function or semigroup', () => {
     expect(checkPoint(p4)).toBe(false);
 });
 
-test('fold', () => {
+it('fold', () => {
     const sum = fold(semigroupSum);
     const prod = fold(semigroupProd);
-    
+
     expect(sum(0, [1, 2, 3, 4])).toBe(10);
     expect(prod(1, [1, 2, 3, 4])).toBe(24);
 });
 
-test('Maybe semigroup', () => {
+it('Maybe semigroup', () => {
     const addMaybe = getApplySemigroup(semigroupSum);
     const multMaybe = getApplySemigroup(semigroupProd);
 
-    expect(addMaybe.concat(Just(5), Just(11))).toStrictEqual(Just(16));
-    expect(addMaybe.concat(Just(5), Nothing)).toStrictEqual(Nothing);
-    expect(multMaybe.concat(Just(5), Just(11))).toStrictEqual(Just(55));
-    expect(multMaybe.concat(Just(5), Nothing)).toStrictEqual(Nothing);
+    expect(addMaybe.concat(Just(5), Just(11))).toEqual(Just(16));
+    expect(addMaybe.concat(Just(5), Nothing)).toEqual(Nothing);
+    expect(multMaybe.concat(Just(5), Just(11))).toEqual(Just(55));
+    expect(multMaybe.concat(Just(5), Nothing)).toEqual(Nothing);
 });
 
-test('Either semigroup', () => {
+it('Either semigroup', () => {
     const allEither = eitherSg<string, boolean>(semigroupAll);
     const fnSgEither = getFunctionSemigroup(allEither)<Point>();
     const ptNot0 = (p: Point) => p.x === 0 ? inl('error in x') : inr(true);
     const ptLess0 = (p: Point) => p.y < 0 ? inr(true) : p.y > 0 ? inl('error in y') : inr(false);
     const testFn = fnSgEither.concat(ptNot0, ptLess0);
 
-    expect(testFn(p1)).toStrictEqual(inl('error in y'));
-    expect(testFn(p2)).toStrictEqual(inl('error in y'));
-    expect(testFn(p3)).toStrictEqual(inr(true));
-    expect(testFn(p4)).toStrictEqual(inl('error in y'));
-    expect(testFn({ x: 0, y: -4 })).toStrictEqual(inl('error in x'));
-    expect(testFn({ x: -1, y: -1 })).toStrictEqual(inr(true));
-    expect(testFn({ x: -1, y: 0 })).toStrictEqual(inr(false));
+    expect(testFn(p1)).toEqual(inl('error in y'));
+    expect(testFn(p2)).toEqual(inl('error in y'));
+    expect(testFn(p3)).toEqual(inr(true));
+    expect(testFn(p4)).toEqual(inl('error in y'));
+    expect(testFn({ x: 0, y: -4 })).toEqual(inl('error in x'));
+    expect(testFn({ x: -1, y: -1 })).toEqual(inr(true));
+    expect(testFn({ x: -1, y: 0 })).toEqual(inr(false));
 });

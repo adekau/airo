@@ -18,7 +18,7 @@ export const unit = <TDomain>(): Func<TDomain, One> =>
 export const identity = <T>(): Func<T, T> =>
     func(x => x);
 
-export const constant = <T, U>(val: U): Func<T, U> => func(x => val);
+export const constant = <T, U>(val: U): Func<T, U> => func(_ => val);
 
 export const powerOfZero = function <A>(): Func<Func<Zero, A>, One> {
     return unit();

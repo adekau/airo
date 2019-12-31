@@ -1,30 +1,30 @@
-import { Maybe, Just, Nothing, apFirst, apSecond } from '../../src/Monad/Maybe';
+import { apFirst, apSecond, Just, Maybe, Nothing } from '../../src/Monad/Maybe';
 
-test('just', () => {
-    expect(Maybe.of(55)).toStrictEqual(Just(55));
+it('just', () => {
+    expect(Maybe.of(55)).toEqual(Just(55));
 });
 
-test('none', () => {
-    expect(Maybe.bind(Maybe.of(55), _ => Nothing)).toStrictEqual(Nothing);
+it('none', () => {
+    expect(Maybe.bind(Maybe.of(55), _ => Nothing)).toEqual(Nothing);
 });
 
-test('bind', () => {
-    expect(Maybe.bind(Maybe.of(55), result => Just(result + 5))).toStrictEqual(Just(60));
+it('bind', () => {
+    expect(Maybe.bind(Maybe.of(55), result => Just(result + 5))).toEqual(Just(60));
 });
 
-test('map', () => {
-    expect(Maybe.map(Maybe.of(55), result => result + 5)).toStrictEqual(Just(60));
+it('map', () => {
+    expect(Maybe.map(Maybe.of(55), result => result + 5)).toEqual(Just(60));
 });
 
-test('apply', () => {
-    expect(Maybe.ap(Just((a: boolean) => !a), Just(false))).toStrictEqual(Just(true));
+it('apply', () => {
+    expect(Maybe.ap(Just((a: boolean) => !a), Just(false))).toEqual(Just(true));
 });
 
-test('pipeable fn', () => {
+it('pipeable fn', () => {
     expect(
         apFirst(Just(5))(Just('hi'))
-    ).toStrictEqual(Just('hi'));
+    ).toEqual(Just('hi'));
     expect(
         apSecond(Just(5))(Just('hi'))
-    ).toStrictEqual(Just(5));
+    ).toEqual(Just(5));
 });
