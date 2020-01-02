@@ -1,8 +1,12 @@
-import { Functor, Functor1, Functor2, PipeableFunctor, PipeableFunctor1, PipeableFunctor2 } from './Functor';
-import { HKT, HKTS, HKTS2, Kind, Kind2 } from './HKT';
+import { Functor, Functor1, Functor2, FunctorF1, PipeableFunctor, PipeableFunctor1, PipeableFunctor2 } from './Functor';
+import { HKT, HKTS, HKTS2, HKTSF, Kind, Kind2, KindF } from './HKT';
 
 export type Apply<F> = Functor<F> & {
     readonly ap: <A, B>(fab: HKT<F, (a: A) => B>, fa: HKT<F, A>) => HKT<F, B>;
+};
+
+export type ApplyF1<F extends HKTSF> = FunctorF1<F> & {
+    readonly ap: <A extends (..._: any[]) => any, B extends (..._: any[]) => any>(fab: KindF<F, (a: A) => B>, fa: KindF<F, A>) => KindF<F, B>;
 };
 
 export type Apply1<F extends HKTS> = Functor1<F> & {

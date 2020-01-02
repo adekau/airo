@@ -1,3 +1,14 @@
+import { MonadF1 } from "../Monad/Monad";
+
+declare module '../Monad/HKT' {
+    interface HKTToKindF<A> {
+        Task: Task<A>
+    }
+};
+
+const HKTId = 'Task';
+type HKTId = typeof HKTId;
+
 export interface ITaskOptions<T> {
     /**
      * Task id, used for keeping track of tasks in a thread pool.
@@ -26,6 +37,7 @@ export class Task<T extends (...args: any[]) => any> implements ITaskOptions<T> 
      * @param reason an explanation of why the task failed.
      */
     public reject: (reason?: unknown) => void;
+    public static taskCounter: number = 0;
     public id: number;
     public func: T | string;
     public state: 'todo' | 'running' | 'done' | 'error';
@@ -47,6 +59,10 @@ export class Task<T extends (...args: any[]) => any> implements ITaskOptions<T> 
         });
         this.state = 'todo';
         this.startTime = undefined;
+    }
+
+    public static getNextId(): number {
+        return ++Task.taskCounter;
     }
 
     /**
@@ -72,6 +88,21 @@ export class Task<T extends (...args: any[]) => any> implements ITaskOptions<T> 
         return this.done();
     }
 
+    map<B extends (..._: any[]) => any>(
+        this: Task<T>,
+        f: (a: T) => B
+    ): Task<B> {
+        return TaskMonad.map(this, f);
+    }
+
+    ap(this: Task<T>, fa: Task<Parameters<T>[0]>): Task<ReturnType<T>> {
+        return TaskMonad.ap(this, fa);
+    }
+
+    bind<B extends (..._: any[]) => any>(this: Task<T>, f: (a: T) => Task<B>): Task<B> {
+        return TaskMonad.bind(this, f);
+    }
+
     /**
      * Returns a promise that completes when the task is done, or fails when the task fails.
      * @returns Promise<T>
@@ -85,3 +116,42 @@ export class Task<T extends (...args: any[]) => any> implements ITaskOptions<T> 
             });
     }
 };
+
+export const TaskMonad: MonadF1<HKTId> = {
+    HKT: HKTId,
+
+    map<A extends (..._: any[]) => any, B extends (..._: any[]) => any>(
+        fa: Task<A>,
+        f: (a: A) => B
+    ): Task<B> {
+        const newFunc = f(typeof fa.func === 'function' ? fa.func : eval(`(${fa.func})`));
+        return new Task({
+            id: fa.id,
+            func: newFunc
+        });
+    },
+
+    // task that wraps a function that takes a function and returns a function
+    ap<A extends (..._: any[]) => any, B extends (..._: any[]) => any>(fab: Task<(a: A) => B>, fa: Task<A>): Task<B> {
+        let newFn: B;
+        if (typeof fab.func === 'function')
+            newFn = fab.func(typeof fa.func === 'function' ? fa.func : eval(`(${fa.func})`));
+        else
+            throw new Error('Task returning a function must not use a string as its `func` property.');
+        return new Task({
+            id: Task.getNextId(),
+            func: newFn
+        });
+    },
+
+    of<A extends (..._: any[]) => any>(a: A): Task<A> {
+        return new Task({
+            id: Task.getNextId(),
+            func: a
+        });
+    },
+
+    bind<A extends (..._: any[]) => any, B extends (..._: any[]) => any>(fa: Task<A>, f: (a: A) => Task<B>): Task<B> {
+        return f(typeof fa.func === 'function' ? fa.func : eval(`(${fa.func})`));
+    }
+}

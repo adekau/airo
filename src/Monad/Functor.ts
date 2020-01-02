@@ -1,8 +1,13 @@
-import { HKT, HKTS, HKTS2, Kind, Kind2 } from './HKT';
+import { HKT, HKTS, HKTS2, HKTSF, Kind, Kind2, KindF } from './HKT';
 
 export type Functor<F> = {
     readonly HKT: F;
     readonly map: <A, B>(fa: HKT<F, A>, f: (a: A) => B) => HKT<F, B>;
+};
+
+export type FunctorF1<F extends HKTSF> = {
+    readonly HKT: F;
+    readonly map: <A extends (..._: any[]) => any, B extends (..._: any[]) => any>(fa: KindF<F, A>, f: (a: A) => B) => KindF<F, B>;
 };
 
 export type Functor1<F extends HKTS> = {

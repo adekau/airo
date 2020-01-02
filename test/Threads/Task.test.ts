@@ -1,4 +1,4 @@
-import { Task } from "../../src/Threads/Task";
+import { Task, TaskMonad } from "../../src/Threads/Task";
 
 describe('Task', () => {
     describe('constructor', () => {
@@ -52,5 +52,42 @@ describe('Task', () => {
                 expect(t.state).toBe('error');
                 done();
             });
+    });
+
+    describe('Monad', () => {
+        const f1 = (x: number) => x + 15;
+        const f2 = (x: number) => x.toString();
+
+        it('can be mapped', async () => {
+            const task = new Task({ id: 1, func: f1 });
+            const newTask = task.map(f => (x: number) => f2(f(x)));
+
+            expect(await newTask.run(5)).toBe('20');
+        });
+
+        it('is applicative', async () => {
+            const lastId = Task.taskCounter;
+            const task = TaskMonad.of((x: number) => x * 4);
+
+            expect(task.id).toBe(lastId + 1);
+            expect(await task.run(5)).toBe(20);
+        });
+
+        it('can be applied', async () => {
+            const f = (f_1: (x: number) => number): ((x: number) => string) =>
+                (x: number) => f_1(x).toString();
+
+            const task = TaskMonad.of(f);
+            const task2 = task.ap(TaskMonad.of(f1));
+
+            expect(await task2.run(6)).toBe('21');
+        });
+
+        it('is bindable', async () => {
+            const task = TaskMonad.of(f1);
+            const newTask = task.bind(f => TaskMonad.of((x: number) => f2(f(x))));
+
+            expect(await newTask.run(51)).toBe('66');
+        });
     });
 });
