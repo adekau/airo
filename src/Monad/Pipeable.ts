@@ -7,9 +7,9 @@ import {
     PipeableApplicative2,
 } from './Applicative';
 import { Apply, Apply1, Apply2, PipeableApply, PipeableApply1, PipeableApply2 } from './Apply';
-import { Bindable, Bindable1, Bindable2, PipeableBindable, PipeableBindable1, PipeableBindable2 } from './Bindable';
+import { Bindable, Bindable1, Bindable2, PipeableBindable, PipeableBindable1, PipeableBindable2, BindableF1 } from './Bindable';
 import { Functor, Functor1, Functor2, PipeableFunctor, PipeableFunctor1, PipeableFunctor2 } from './Functor';
-import { HKT, HKTS, HKTS2 } from './HKT';
+import { HKT, HKTS, HKTS2, HKTSF } from './HKT';
 
 export function pipe<T1>(v: T1): T1;
 export function pipe<T1, T2>(v: T1, fn1: (t1: T1) => T2): T2;
@@ -167,6 +167,11 @@ export function pipeable<F extends HKTS, I>(
         I extends Applicative1<F> ? PipeableApplicative1<F> :
         {}
     );
+export function pipeable<F extends HKTSF, I>(
+    I: { HKT: F } & I
+): (
+    I extends BindableF1<F> ? PipeableBindableF1 :
+)
 export function pipeable<F, I>(
     I: { HKT: F } & I
 ): (

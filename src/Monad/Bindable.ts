@@ -23,6 +23,14 @@ export type PipeableBindable<F> = PipeableApply<F> & {
     readonly flatten: <A>(mma: HKT<F, HKT<F, A>>) => HKT<F, A>;
 };
 
+export type PipeableBindableF1<F extends HKTSF> = PipeableApplyF1<F> & {
+    readonly bind: <A extends (..._: any[]) => any, B extends (..._: any[]) => any>(f: (a: A) => KindF<F, B>) =>
+        (fa: KindF<F, A>) => KindF<F, B>;
+    readonly bindFirst: <A extends (..._: any[]) => any, B extends (..._: any[]) => any>(f: (a: A) => KindF<F, B>) =>
+        (fa: KindF<F, A>) => KindF<F, A>;
+    readonly flatten: <A extends (..._: any[]) => any>(mma: KindF<F, KindF<F, A>['func']>) => KindF<F, A>;
+};
+
 export type PipeableBindable1<F extends HKTS> = PipeableApply1<F> & {
     readonly bind: <A, B>(f: (a: A) => Kind<F, B>) => (fa: Kind<F, A>) => Kind<F, B>;
     readonly bindFirst: <A, B>(f: (a: A) => Kind<F, B>) => (fa: Kind<F, A>) => Kind<F, A>;
