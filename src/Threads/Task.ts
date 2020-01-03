@@ -202,6 +202,7 @@ export const TaskMonad: MonadF1<HKTId> = {
  * Creates a function from a string. Used when you need async keyword in a task running on a non-main thread.
  * Necessary or else TypeScript will compile the await keyword to a promise using `__awaiter` and `__generator`
  * which are defined in TSLib which is unavailable in threads.
+ * @warning Uses `eval` internally to convert string to function, don't expose this function to user input.
  * @example const fn: (x: any) => any = sfunc`(x) => x + 2`;
  */
 export function sfunc<A = any, R = any>(
