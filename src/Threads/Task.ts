@@ -62,6 +62,10 @@ export class Task<T extends (...args: any[]) => any> implements ITaskOptions<T> 
         this.startTime = undefined;
     }
 
+    /**
+     * Gets the next available id for a new task. Automatically called using `TaskMonad.of`
+     * @returns number
+     */
     public static getNextId(): number {
         return ++Task.taskCounter;
     }
@@ -87,6 +91,11 @@ export class Task<T extends (...args: any[]) => any> implements ITaskOptions<T> 
         return this.done();
     }
 
+    /**
+     * Maps from one function to another in a new Task.
+     * @param f A function from the calling task's `func` type to a new `func` type.
+     * @example TaskMonad.of((x: number) => x + 1).map(f => (x: number) => f(x) * 2)
+     */
     map<B extends (..._: any[]) => any>(
         this: Task<T>,
         f: (a: T) => B
@@ -94,17 +103,50 @@ export class Task<T extends (...args: any[]) => any> implements ITaskOptions<T> 
         return TaskMonad.map(this, f);
     }
 
+    /**
+     * If the task wraps a function that accepts a function as input and returns a new function, apply
+     * takes a task from the domain function and returns a task that accepts input and returns the range function.
+     * @param fa Task with a function on the left hand side of the first task.
+     * @example
+     * ```
+     *  const f1 = (x: number) => x + 15;
+     *  //                  v--domain               v--- range function
+     *  const f = (domain: (x: number) => number): ((x: number) => string) =>
+     *      (x: number) => f_1(x).toString();
+     *  const task = TaskMonad.of(f);
+     *  const task2 = task.ap(TaskMonad.of(f1));
+     *  const result = await task2.run(6); // '21'
+        ```
+     */
     ap(this: Task<T>, fa: Task<Parameters<T>[0]>): Task<ReturnType<T>> {
         return TaskMonad.ap(this, fa);
     }
 
+    /**
+     * Takes a function mapping the previous function to a new Task with a different function.
+     * @param f Mapping function from thisTask.func -> new Task.
+     * @example
+     * ```
+     * const f1 = (x: number) => x + 15;
+     * const f2 = (x: number) => x.toString();
+     * const task = TaskMonad.of(f1);
+     * const task2 = task.bind(f => TaskMonad.of((x: number) => f2(f(x))));
+     * const result = await task2.run(51)) // 66
+     * ```
+     */
     bind<B extends (..._: any[]) => any>(this: Task<T>, f: (a: T) => Task<B>): Task<B> {
         return TaskMonad.bind(this, f);
     }
 
     /**
      * Returns a promise that completes when the task is done, or fails when the task fails.
-     * @returns Promise<T>
+     * @returns Promise<ReturnType<T>>
+     * @example
+     * ```
+     * const task = TaskMonad.of((x: string) => x.length);
+     * Thread.run(task, 'hello');
+     * const result = await task.done(); // 5
+     * ```
      */
     public async done(): Promise<ReturnType<T>> {
         return this._promise
@@ -116,6 +158,9 @@ export class Task<T extends (...args: any[]) => any> implements ITaskOptions<T> 
     }
 };
 
+/**
+ * Contains the functions necessary for using `Task` as a monad.
+ */
 export const TaskMonad: MonadF1<HKTId> = {
     HKT: HKTId,
 
@@ -129,7 +174,6 @@ export const TaskMonad: MonadF1<HKTId> = {
         });
     },
 
-    // task that wraps a function that takes a function and returns a function
     ap<A extends (..._: any[]) => any, B extends (..._: any[]) => any>(fab: Task<(a: A) => B>, fa: Task<A>): Task<B> {
         return new Task({
             id: Task.getNextId(),
@@ -137,6 +181,10 @@ export const TaskMonad: MonadF1<HKTId> = {
         });
     },
 
+    /**
+     * Creates a new Task with an auto generated id.
+     * @param a Function to create the task with.
+     */
     of<A extends (..._: any[]) => any>(a: A): Task<A> {
         return new Task({
             id: Task.getNextId(),
@@ -153,6 +201,7 @@ export const TaskMonad: MonadF1<HKTId> = {
  * Creates a function from a string. Used when you need async keyword in a task running on a non-main thread.
  * Necessary or else TypeScript will compile the await keyword to a promise using `__awaiter` and `__generator`
  * which are defined in TSLib which is unavailable in threads.
+ * @example const fn: (x: any) => any = sfunc`(x) => x + 2`;
  */
 export function sfunc(
     literals: TemplateStringsArray,
