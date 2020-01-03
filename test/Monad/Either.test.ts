@@ -1,4 +1,4 @@
-import { Either, inl, inr, fold } from '../../src/Monad/Either';
+import { Either, fold, inl, inr } from '../../src/Monad/Either';
 
 const badVal = 'Bad value';
 const falsyIsError = <T extends unknown>(val: T): Either<string, T> =>

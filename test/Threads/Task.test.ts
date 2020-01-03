@@ -1,5 +1,5 @@
-import { sfunc, Task, TaskMonad, of, map, bind } from '../../src/Threads/Task';
 import { pipe } from '../../src/Monad/Pipeable';
+import { bind, map, of, sfunc, Task, TaskMonad } from '../../src/Threads/Task';
 
 describe('Task', () => {
     describe('constructor', () => {

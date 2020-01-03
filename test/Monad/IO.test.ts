@@ -1,4 +1,4 @@
-import { IO, of, map, bind } from '../../src/Monad/IO';
+import { bind, IO, map, of } from '../../src/Monad/IO';
 import { pipe } from '../../src/Monad/Pipeable';
 
 const io = IO.of('Hello world!');

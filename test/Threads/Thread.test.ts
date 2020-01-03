@@ -1,4 +1,4 @@
-import { Task, sfunc } from '../../src/Threads/Task';
+import { sfunc, Task } from '../../src/Threads/Task';
 import { Thread } from '../../src/Threads/Thread';
 
 function threadTerminate(th: Thread) {
