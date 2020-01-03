@@ -1,6 +1,6 @@
 import { fnToURL, noOp } from './helpers';
 import { Message } from './Message';
-import { Task } from './Task';
+import { sfunc, Task } from './Task';
 
 export type ThreadConfig = {
     /**
@@ -156,7 +156,7 @@ const workerMain: string = `function() {
     }
 };`;
 
-const setGlobals = `function (g) {
+const setGlobals = sfunc`function (g) {
     if (g !== undefined)
         Object.keys(g).forEach(k => global[k] = g[k]);
 }`;

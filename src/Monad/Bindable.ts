@@ -1,4 +1,4 @@
-import { Apply, Apply1, Apply2, ApplyF1, PipeableApply, PipeableApply1, PipeableApply2 } from './Apply';
+import { Apply, Apply1, Apply2, ApplyF1, PipeableApply, PipeableApply1, PipeableApply2, PipeableApplyF1 } from './Apply';
 import { HKT, HKTS, HKTS2, HKTSF, Kind, Kind2, KindF } from './HKT';
 
 export type Bindable<F> = Apply<F> & {

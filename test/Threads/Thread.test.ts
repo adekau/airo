@@ -1,4 +1,4 @@
-import { Task } from '../../src/Threads/Task';
+import { Task, sfunc } from '../../src/Threads/Task';
 import { Thread } from '../../src/Threads/Thread';
 
 function threadTerminate(th: Thread) {
@@ -36,7 +36,7 @@ describe('Thread', () => {
         expect(result).toBe(30);
     });
 
-    it('runs an async task on a tread', async () => {
+    it('runs an async task on a thread', async () => {
         const thread = new Thread({
             id: 1,
             onTaskDone: jasmine.createSpy('taskDone'),
@@ -47,7 +47,7 @@ describe('Thread', () => {
             id: 1,
             // async functions like so will need to be strings or else tsc transorms it
             // to `__awaiter` which doesn't exist on the worker thread.
-            func: `async x => x * 2`
+            func: sfunc`async x => x * 2`
         });
 
         thread.run(task, 17);
@@ -127,7 +127,7 @@ describe('Thread', () => {
         await thread.setOrMergeGlobals(glbls);
         const task = new Task({
             id: 2,
-            func: `() => global.name + ' is ' + global.age`
+            func: sfunc`() => global.name + ' is ' + global.age`
         });
         thread.run(task);
         const result = await task.done();

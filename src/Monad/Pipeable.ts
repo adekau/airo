@@ -2,13 +2,33 @@ import {
     Applicative,
     Applicative1,
     Applicative2,
+    ApplicativeF1,
     PipeableApplicative,
     PipeableApplicative1,
     PipeableApplicative2,
+    PipeableApplicativeF1,
 } from './Applicative';
-import { Apply, Apply1, Apply2, PipeableApply, PipeableApply1, PipeableApply2 } from './Apply';
-import { Bindable, Bindable1, Bindable2, PipeableBindable, PipeableBindable1, PipeableBindable2, BindableF1 } from './Bindable';
-import { Functor, Functor1, Functor2, PipeableFunctor, PipeableFunctor1, PipeableFunctor2 } from './Functor';
+import { Apply, Apply1, Apply2, ApplyF1, PipeableApply, PipeableApply1, PipeableApply2, PipeableApplyF1 } from './Apply';
+import {
+    Bindable,
+    Bindable1,
+    Bindable2,
+    BindableF1,
+    PipeableBindable,
+    PipeableBindable1,
+    PipeableBindable2,
+    PipeableBindableF1,
+} from './Bindable';
+import {
+    Functor,
+    Functor1,
+    Functor2,
+    FunctorF1,
+    PipeableFunctor,
+    PipeableFunctor1,
+    PipeableFunctor2,
+    PipeableFunctorF1,
+} from './Functor';
 import { HKT, HKTS, HKTS2, HKTSF } from './HKT';
 
 export function pipe<T1>(v: T1): T1;
@@ -170,8 +190,14 @@ export function pipeable<F extends HKTS, I>(
 export function pipeable<F extends HKTSF, I>(
     I: { HKT: F } & I
 ): (
-    I extends BindableF1<F> ? PipeableBindableF1 :
-)
+    I extends BindableF1<F> ? PipeableBindableF1<F> :
+    I extends ApplyF1<F> ? PipeableApplyF1<F> :
+    I extends FunctorF1<F> ? PipeableFunctorF1<F> :
+    {}
+) & (
+        I extends ApplicativeF1<F> ? PipeableApplicativeF1<F> :
+        {}
+    );
 export function pipeable<F, I>(
     I: { HKT: F } & I
 ): (

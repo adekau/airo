@@ -24,6 +24,10 @@ export type PipeableFunctor<F> = {
     readonly map: <A, B>(f: (a: A) => B) => (fa: HKT<F, A>) => HKT<F, B>;
 };
 
+export type PipeableFunctorF1<F extends HKTSF> = {
+    readonly map: <A extends (..._: any[]) => any, B extends (..._: any[]) => any>(f: (a: A) => B) => (fa: KindF<F, A>) => KindF<F, B>;
+};
+
 export type PipeableFunctor1<F extends HKTS> = {
     readonly map: <A, B>(f: (a: A) => B) => (fa: Kind<F, A>) => Kind<F, B>;
 };

@@ -25,10 +25,10 @@ describe('IO Monad', () => {
     it('pipes', () => {
         const t = pipe(
             5,
-            of,
+            of(),
             map(x => x + 5),
             map(x => x.toString()),
-            bind(x => of(x + '!'))
+            bind(x => IO.of(x + '!'))
         );
         expect(t()).toBe('10!');
     });
@@ -37,7 +37,7 @@ describe('IO Monad', () => {
         console.log = jasmine.createSpy('log');
         const t = pipe(
             5,
-            of,
+            of(),
             map(x => console.log(x))
         );
         expect(t).not.toThrow();

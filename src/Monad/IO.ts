@@ -12,15 +12,12 @@ export type IO<A> = () => A;
 export const HKTId = 'IO';
 export type HKTId = typeof HKTId;
 
-export const of = <A>(a: A): IO<A> =>
-    () => a;
-
 export const IO: Monad1<HKTId> = {
     HKT: HKTId,
 
     map: (fa, f) => () => f(fa()),
 
-    of,
+    of: (a) => () => a,
 
     ap: (fab, fa) => () => fab()(fa()),
 
@@ -34,5 +31,6 @@ export const {
     bind,
     bindFirst,
     flatten,
-    map
+    map,
+    of
 } = pipeable(IO);

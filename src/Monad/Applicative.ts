@@ -1,4 +1,4 @@
-import { Apply, Apply1, Apply2, ApplyF1, PipeableApply, PipeableApply1, PipeableApply2 } from './Apply';
+import { Apply, Apply1, Apply2, ApplyF1, PipeableApply, PipeableApply1, PipeableApply2, PipeableApplyF1 } from './Apply';
 import { HKT, HKTS, HKTS2, HKTSF, Kind, Kind2, KindF } from './HKT';
 
 export type Applicative<F> = Apply<F> & {
@@ -19,6 +19,10 @@ export type Applicative2<F extends HKTS2> = Apply2<F> & {
 
 export type PipeableApplicative<F> = PipeableApply<F> & {
     readonly of: <A>() => (a: A) => HKT<F, A>;
+};
+
+export type PipeableApplicativeF1<F extends HKTSF> = PipeableApplyF1<F> & {
+    readonly of: <A extends (..._: any[]) => any>() => (a: A) => KindF<F, A>;
 };
 
 export type PipeableApplicative1<F extends HKTS> = PipeableApply1<F> & {

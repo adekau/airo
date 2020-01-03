@@ -1,4 +1,13 @@
-import { Functor, Functor1, Functor2, FunctorF1, PipeableFunctor, PipeableFunctor1, PipeableFunctor2 } from './Functor';
+import {
+    Functor,
+    Functor1,
+    Functor2,
+    FunctorF1,
+    PipeableFunctor,
+    PipeableFunctor1,
+    PipeableFunctor2,
+    PipeableFunctorF1,
+} from './Functor';
 import { HKT, HKTS, HKTS2, HKTSF, Kind, Kind2, KindF } from './HKT';
 
 export type Apply<F> = Functor<F> & {
@@ -21,6 +30,12 @@ export type PipeableApply<F> = PipeableFunctor<F> & {
     readonly ap: <A>(fa: HKT<F, A>) => <B>(fab: HKT<F, (a: A) => B>) => HKT<F, B>;
     readonly apFirst: <B>(fb: HKT<F, B>) => <A>(fa: HKT<F, A>) => HKT<F, A>;
     readonly apSecond: <B>(fb: HKT<F, B>) => <A>(fa: HKT<F, A>) => HKT<F, B>;
+};
+
+export type PipeableApplyF1<F extends HKTSF> = PipeableFunctorF1<F> & {
+    readonly ap: <A extends (..._: any[]) => any, B extends (..._: any[]) => any>(fa: KindF<F, A>) => (fab: KindF<F, (a: A) => B>) => KindF<F, B>;
+    readonly apFirst: <B extends (..._: any[]) => any>(fb: KindF<F, B>) => <A extends (..._: any[]) => any>(fa: KindF<F, A>) => KindF<F, A>;
+    readonly apSecond: <B extends (..._: any[]) => any>(fb: KindF<F, B>) => <A extends (..._: any[]) => any>(fa: KindF<F, A>) => KindF<F, B>;
 };
 
 export type PipeableApply1<F extends HKTS> = PipeableFunctor1<F> & {
