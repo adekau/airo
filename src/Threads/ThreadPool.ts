@@ -46,7 +46,7 @@ export class ThreadPool {
         // TODO: terminate each thread.
     }
 
-    public run<T extends (...args: any[]) => any>(func: T | string, ...args: Parameters<T>): Task<T> {
+    public run<T extends (...args: any[]) => any>(func: T, ...args: Parameters<T>): Task<T> {
         if (this._terminated)
             throw new Error(`ThreadPool ${this.id} is terminated.`);
 

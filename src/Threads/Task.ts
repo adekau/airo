@@ -1,4 +1,5 @@
-import { MonadF1 } from "../Monad/Monad";
+import { MonadF1 } from '../Monad/Monad';
+import { pipeable } from '../Monad/Pipeable';
 
 declare module '../Monad/HKT' {
     interface HKTToKindF<A> {
@@ -9,7 +10,7 @@ declare module '../Monad/HKT' {
 const HKTId = 'Task';
 type HKTId = typeof HKTId;
 
-export interface ITaskOptions<T> {
+export interface ITaskOptions<T extends (...args: any[]) => any> {
     /**
      * Task id, used for keeping track of tasks in a thread pool.
      */
@@ -18,7 +19,7 @@ export interface ITaskOptions<T> {
     /**
      * Function to execute when `Task.run` is called.
      */
-    func: T | string;
+    func: T;
 };
 
 /**
@@ -39,7 +40,7 @@ export class Task<T extends (...args: any[]) => any> implements ITaskOptions<T> 
     public reject: (reason?: unknown) => void;
     public static taskCounter: number = 0;
     public id: number;
-    public func: T | string;
+    public func: T;
     public state: 'todo' | 'running' | 'done' | 'error';
     public startTime: Date | undefined;
 
@@ -75,16 +76,14 @@ export class Task<T extends (...args: any[]) => any> implements ITaskOptions<T> 
         this.startTime = new Date();
 
         try {
-            const result = typeof this.func === 'function'
-                ? this.func(...args)
-                : eval(`(${this.func})`);
-
+            const result = this.func(...args);
             this.state = 'done';
             this.resolve(result);
         } catch (e) {
             this.state = 'error';
             this.reject(e);
         }
+
         return this.done();
     }
 
@@ -124,23 +123,17 @@ export const TaskMonad: MonadF1<HKTId> = {
         fa: Task<A>,
         f: (a: A) => B
     ): Task<B> {
-        const newFunc = f(typeof fa.func === 'function' ? fa.func : eval(`(${fa.func})`));
         return new Task({
             id: fa.id,
-            func: newFunc
+            func: f(fa.func)
         });
     },
 
     // task that wraps a function that takes a function and returns a function
     ap<A extends (..._: any[]) => any, B extends (..._: any[]) => any>(fab: Task<(a: A) => B>, fa: Task<A>): Task<B> {
-        let newFn: B;
-        if (typeof fab.func === 'function')
-            newFn = fab.func(typeof fa.func === 'function' ? fa.func : eval(`(${fa.func})`));
-        else
-            throw new Error('Task returning a function must not use a string as its `func` property.');
         return new Task({
             id: Task.getNextId(),
-            func: newFn
+            func: fab.func(fa.func)
         });
     },
 
@@ -152,6 +145,38 @@ export const TaskMonad: MonadF1<HKTId> = {
     },
 
     bind<A extends (..._: any[]) => any, B extends (..._: any[]) => any>(fa: Task<A>, f: (a: A) => Task<B>): Task<B> {
-        return f(typeof fa.func === 'function' ? fa.func : eval(`(${fa.func})`));
+        return f(fa.func);
     }
 }
+
+/**
+ * Creates a function from a string. Used when you need async keyword in a task running on a non-main thread.
+ * Necessary or else TypeScript will compile the await keyword to a promise using `__awaiter` and `__generator`
+ * which are defined in TSLib which is unavailable in threads.
+ */
+export function sfunc(
+    literals: TemplateStringsArray,
+    ...vars: string[]
+): (..._: any[]) => any {
+    let str: string = "";
+
+    if (vars.length) {
+        for (let i = 0; i < vars.length; i++) {
+            str += literals[i] + vars[i];
+        }
+    }
+    str += literals[literals.length - 1];
+
+    return eval(`(${str})`) as (..._: any[]) => any;
+}
+
+export const {
+    ap,
+    apFirst,
+    apSecond,
+    bind,
+    bindFirst,
+    flatten,
+    map,
+    of
+} = pipeable(TaskMonad);

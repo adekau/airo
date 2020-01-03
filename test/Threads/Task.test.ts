@@ -1,4 +1,5 @@
-import { Task, TaskMonad } from "../../src/Threads/Task";
+import { sfunc, Task, TaskMonad, of, map, bind } from '../../src/Threads/Task';
+import { pipe } from '../../src/Monad/Pipeable';
 
 describe('Task', () => {
     describe('constructor', () => {
@@ -65,6 +66,13 @@ describe('Task', () => {
             expect(await newTask.run(5)).toBe('20');
         });
 
+        it('can map on string funcs', async () => {
+            const task = TaskMonad.of(sfunc`x => x + 38`);
+            const task2 = task.map(f => (x: number) => f(x) + 15);
+
+            expect(await task2.run(2)).toBe(55);
+        });
+
         it('is applicative', async () => {
             const lastId = Task.taskCounter;
             const task = TaskMonad.of((x: number) => x * 4);
@@ -88,6 +96,23 @@ describe('Task', () => {
             const newTask = task.bind(f => TaskMonad.of((x: number) => f2(f(x))));
 
             expect(await newTask.run(51)).toBe('66');
+        });
+    });
+
+    describe('Pipeable', () => {
+        const f1 = (x: number) => x * 2;
+        const f2 = (x: number) => x > 5;
+
+        it('is pipeable', async () => {
+            const p = pipe(
+                f1,
+                of(),
+                map(f => (x: number) => f2(f(x))),
+                bind(g => TaskMonad.of((x: number) => !g(x))),
+                bind(h => TaskMonad.of((x: number) => h(x) ? 'hello' : 'world'))
+            );
+
+            expect(await p.run(15)).toBe('world');
         });
     });
 });
