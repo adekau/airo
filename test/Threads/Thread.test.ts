@@ -47,7 +47,7 @@ describe('Thread', () => {
             id: 1,
             // async functions like so will need to be strings or else tsc transorms it
             // to `__awaiter` which doesn't exist on the worker thread.
-            func: sfunc`async x => x * 2`
+            func: sfunc<number, number>`async x => x * 2`
         });
 
         thread.run(task, 17);
@@ -127,7 +127,7 @@ describe('Thread', () => {
         await thread.setOrMergeGlobals(glbls);
         const task = new Task({
             id: 2,
-            func: sfunc`() => global.name + ' is ' + global.age`
+            func: sfunc<any, string>`() => global.name + ' is ' + global.age`
         });
         thread.run(task);
         const result = await task.done();

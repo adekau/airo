@@ -67,7 +67,7 @@ describe('Task', () => {
         });
 
         it('can map on string funcs', async () => {
-            const task = TaskMonad.of(sfunc`x => x + 38`);
+            const task = TaskMonad.of(sfunc<number, number>`x => x + 38`);
             const task2 = task.map(f => (x: number) => f(x) + 15);
 
             expect(await task2.run(2)).toBe(55);

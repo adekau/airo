@@ -156,7 +156,7 @@ const workerMain: string = `function() {
     }
 };`;
 
-const setGlobals = sfunc`function (g) {
+const setGlobals = sfunc<{ [k: string]: any }, void>`function (g) {
     if (g !== undefined)
         Object.keys(g).forEach(k => global[k] = g[k]);
 }`;

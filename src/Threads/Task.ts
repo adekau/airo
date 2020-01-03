@@ -1,5 +1,6 @@
 import { MonadF1 } from '../Monad/Monad';
 import { pipeable } from '../Monad/Pipeable';
+import { IsAny } from './helpers';
 
 declare module '../Monad/HKT' {
     interface HKTToKindF<A> {
@@ -203,10 +204,13 @@ export const TaskMonad: MonadF1<HKTId> = {
  * which are defined in TSLib which is unavailable in threads.
  * @example const fn: (x: any) => any = sfunc`(x) => x + 2`;
  */
-export function sfunc(
+export function sfunc<A = any, R = any>(
     literals: TemplateStringsArray,
     ...vars: string[]
-): (..._: any[]) => any {
+): IsAny<A> extends true
+    ? (..._: any[]) => R
+    : (a: A) => R
+{
     let str: string = "";
 
     if (vars.length) {
@@ -216,7 +220,7 @@ export function sfunc(
     }
     str += literals[literals.length - 1];
 
-    return eval(`(${str})`) as (..._: any[]) => any;
+    return eval(`(${str})`);
 }
 
 export const {
