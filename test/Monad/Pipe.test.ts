@@ -1,4 +1,4 @@
-import { Just, map, of } from '../../src/Monad/Maybe';
+import { Just, map, of, ap, bind, bindFirst, apSecond, flatten } from '../../src/Monad/Maybe';
 import { pipe } from '../../src/Monad/Pipeable';
 
 const incrX = (x: number) => (v: number) => v + x;
@@ -35,5 +35,46 @@ describe('Pipe', () => {
             return;
         }
         fail('Should not execute pipe');
+    });
+
+    it('applies', () => {
+        const m = pipe(
+            (x: number) => x * 2,
+            of(),
+            ap(Just(100)),
+            bind(n => Just(n + 5)),
+            bindFirst(a => Just(a + 5))
+        );
+
+        expect(m).toEqual(Just(205));
+
+        const m2 = pipe(
+            (x: number) => x * 2,
+            of(),
+            ap(Just(100)),
+            bind(n => Just(n + 5)),
+            apSecond(Just(15))
+        );
+
+        expect(m2).toEqual(Just(15));
+    });
+
+    it('flattens', () => {
+        const m = pipe(
+            15,
+            of(),
+            of()
+        );
+
+        expect(m).toEqual(Just(Just(15)));
+
+        const m2 = pipe(
+            15,
+            of(),
+            of(),
+            flatten
+        );
+
+        expect(m2).toEqual(Just(15));
     });
 });

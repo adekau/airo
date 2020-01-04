@@ -1,4 +1,4 @@
-import { apFirst, apSecond, Just, Maybe, Nothing } from '../../src/Monad/Maybe';
+import { apFirst, apSecond, Just, Maybe, Nothing, fold } from '../../src/Monad/Maybe';
 
 describe('Maybe Monad', () => {
     it('just', () => {
@@ -28,5 +28,15 @@ describe('Maybe Monad', () => {
         expect(
             apSecond(Just(5))(Just('hi'))
         ).toEqual(Just(5));
+    });
+
+    it('fold', () => {
+        const div = (num1: number, num2: number) => num2 === 0 ? Nothing : Just(num1 / num2);
+        const fld = fold(() => 0, (v) => v);
+
+        expect(fld(div(15, 0))).toBe(0);
+        expect(fld(div(15, 3))).toBe(5);
+        expect(fld(div(-15, 3))).toBe(-5);
+        expect(fld(div(NaN, 0))).toBe(0);
     });
 });
