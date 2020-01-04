@@ -45,9 +45,11 @@ export class Task<T extends (...args: any[]) => any> implements ITaskOptions<T> 
     public state: 'todo' | 'running' | 'done' | 'error';
     public startTime: Date | undefined;
 
-    constructor(opts: ITaskOptions<T>) {
-        this.id = opts.id;
-        this.func = opts.func;
+    constructor(opts: ITaskOptions<T>);
+    constructor(fn: T);
+    constructor(arg: any) {
+        this.id = arg.id ?? Task.getNextId();
+        this.func = arg.func ?? arg;
         this._promise = new Promise((resolve, reject) => {
             this.resolve = (value?: ReturnType<T> | PromiseLike<ReturnType<T>> | undefined) => {
                 this.state = 'done';

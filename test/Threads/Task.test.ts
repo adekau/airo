@@ -13,6 +13,17 @@ describe('Task', () => {
             expect(t.state).toBe('todo');
             expect(t.startTime).toBeUndefined();
         });
+
+        it('can construct with just a func', () => {
+            const lastId: number = Task.taskCounter;
+            const fn = (x: number) => x + 5;
+            const task = new Task(fn);
+
+            expect(task.func).toEqual(fn);
+            expect(task.id).toBe(lastId + 1);
+            expect(task.state).toBe('todo');
+            expect(task.startTime).toBeUndefined();
+        });
     });
 
     it('should execute task', async () => {

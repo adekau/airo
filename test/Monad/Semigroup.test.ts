@@ -4,11 +4,17 @@ import {
     fold,
     getFunctionSemigroup,
     getStructSemigroup,
+    getTupleSemigroup,
     Semigroup,
     semigroupAll,
     semigroupAny,
     semigroupProd,
+    semigroupString,
     semigroupSum,
+    semigroupVoid,
+    getDualSemigroup,
+    getLastSemigroup,
+    getFirstSemigroup,
 } from '../../src/Monad/Semigroup';
 
 describe('Semigroup', () => {
@@ -106,5 +112,33 @@ describe('Semigroup', () => {
         expect(testFn({ x: 0, y: -4 })).toEqual(inl('error in x'));
         expect(testFn({ x: -1, y: -1 })).toEqual(inr(true));
         expect(testFn({ x: -1, y: 0 })).toEqual(inr(false));
+    });
+
+    it('string semigroup', () => {
+        expect(semigroupString.concat('Hello', ' world!')).toBe('Hello world!');
+    });
+
+    it('tuple semigroup', () => {
+        const s = getTupleSemigroup(semigroupString, semigroupSum, semigroupVoid);
+        expect(s.concat(['hello', 5, void 5], ['!', 16, void 18])).toEqual(['hello!', 21, void 0]);
+    });
+
+    it('dual semigroup', () => {
+        const s = getDualSemigroup(semigroupSum);
+        expect(s.concat(5, 21)).toBe(26);
+        const s2 = getDualSemigroup(semigroupString);
+        expect(s2.concat('hello', 'world')).toBe('worldhello');
+    });
+
+    it('last semigroup', () => {
+        expect(getLastSemigroup<number>().concat(5, 1)).toBe(1);
+        expect(getLastSemigroup<number>().concat(1, 5)).toBe(5);
+        expect(getLastSemigroup<string>().concat('hello', 'world')).toBe('world');
+    });
+
+    it('first semigroup', () => {
+        expect(getFirstSemigroup<number>().concat(5, 1)).toBe(5);
+        expect(getFirstSemigroup<number>().concat(1, 5)).toBe(1);
+        expect(getFirstSemigroup<string>().concat('hello', 'world')).toBe('hello');
     });
 });
