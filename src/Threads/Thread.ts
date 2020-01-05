@@ -106,12 +106,11 @@ export class Thread implements ThreadConfig {
      * Set properties global to any task that runs on this thread.
      * @param globals Sets properties that can be accessed from any task run in the thread.
      * Accessible through `self.key` or `global.key`. `global` is a proxy.
-     * @param taskId optional id to give the task that will set the globals on the thread.
      * @returns Promise<void>
      */
-    public setOrMergeGlobals(globals: { [k: string]: any }, taskId?: number): Promise<void> {
+    public setOrMergeGlobals(globals: { [k: string]: any }): Promise<void> {
         Object.assign(this.globals, globals);
-        const setGlobalTask = new Task({ id: taskId || 1, func: setGlobals });
+        const setGlobalTask = new Task(setGlobals);
         this.run(setGlobalTask, this.globals);
         return setGlobalTask.done();
     }
