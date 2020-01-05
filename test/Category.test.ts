@@ -22,5 +22,5 @@ describe('Category', () => {
 
     it('prod identity inverse', () => {
         expect(apply(prodIdentityInv<number>(), 5)).toEqual({ fst: 5, snd: {} });
-    })
+    });
 });

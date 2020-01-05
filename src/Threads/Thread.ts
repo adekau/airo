@@ -113,12 +113,7 @@ export class Thread implements ThreadConfig {
         Object.assign(this.globals, globals);
         const setGlobalTask = new Task({ id: taskId || 1, func: setGlobals });
         this.run(setGlobalTask, this.globals);
-
-        return new Promise((resolve, reject) => {
-            setGlobalTask.done()
-                .then(() => resolve())
-                .catch(e => reject(e));
-        });
+        return setGlobalTask.done();
     }
 }
 
