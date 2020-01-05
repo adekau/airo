@@ -1,4 +1,6 @@
-import { Func, func } from '../src/Func';
+import { inr } from '../src';
+import { identity } from '../src/Category';
+import { apply, distSumProd, Func, func, factorSumProd } from '../src/Func';
 
 describe('Func wrapper', () => {
     it('Increment function', () => {
@@ -45,5 +47,25 @@ describe('Func wrapper', () => {
         const something = func((x: number) => `Your number is ${x}`);
         const something2 = something.then(func(x => x.length));
         expect(something2.f(5)).toBe(16);
+    });
+
+    it('distributes sum prod', () => {
+        const sum = inr<string, number>();
+        const fn = identity<number>()
+            .times(sum);
+        const dist = fn.then(distSumProd());
+
+        expect(apply(fn, 5)).toEqual({ fst: 5, snd: { kind: 'right', value: 5 }});
+        expect(apply(dist, 5)).toEqual({ kind: 'right', value: { fst: 5, snd: 5 }});
+    });
+
+    it('factors prod', () => {
+        const sum = inr<string, number>();
+        const fn = identity<number>()
+            .times(sum);
+        const dist = fn.then(distSumProd());
+        const factor = dist.then(factorSumProd());
+
+        expect(apply(factor, 5)).toEqual(apply(fn, 5));
     });
 });
